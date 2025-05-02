@@ -1,0 +1,153 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C6AEDC23-2DFA-40E4-B583-5ED357C91874}|TheBrokeAPI.csproj|c:\\users\\felip\\onedrive\\documentos\\thebrokev1\\thebrokeapi\\controllers\\transacoescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6AEDC23-2DFA-40E4-B583-5ED357C91874}|TheBrokeAPI.csproj|solutionrelative:controllers\\transacoescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6AEDC23-2DFA-40E4-B583-5ED357C91874}|TheBrokeAPI.csproj|c:\\users\\felip\\onedrive\\documentos\\thebrokev1\\thebrokeapi\\models\\transacoes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6AEDC23-2DFA-40E4-B583-5ED357C91874}|TheBrokeAPI.csproj|solutionrelative:models\\transacoes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6AEDC23-2DFA-40E4-B583-5ED357C91874}|TheBrokeAPI.csproj|c:\\users\\felip\\onedrive\\documentos\\thebrokev1\\thebrokeapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{C6AEDC23-2DFA-40E4-B583-5ED357C91874}|TheBrokeAPI.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6AEDC23-2DFA-40E4-B583-5ED357C91874}|TheBrokeAPI.csproj|c:\\users\\felip\\onedrive\\documentos\\thebrokev1\\thebrokeapi\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6AEDC23-2DFA-40E4-B583-5ED357C91874}|TheBrokeAPI.csproj|solutionrelative:data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6AEDC23-2DFA-40E4-B583-5ED357C91874}|TheBrokeAPI.csproj|c:\\users\\felip\\onedrive\\documentos\\thebrokev1\\thebrokeapi\\controllers\\usuarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6AEDC23-2DFA-40E4-B583-5ED357C91874}|TheBrokeAPI.csproj|solutionrelative:controllers\\usuarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6AEDC23-2DFA-40E4-B583-5ED357C91874}|TheBrokeAPI.csproj|c:\\users\\felip\\onedrive\\documentos\\thebrokev1\\thebrokeapi\\models\\usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6AEDC23-2DFA-40E4-B583-5ED357C91874}|TheBrokeAPI.csproj|solutionrelative:models\\usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6AEDC23-2DFA-40E4-B583-5ED357C91874}|TheBrokeAPI.csproj|c:\\users\\felip\\onedrive\\documentos\\thebrokev1\\thebrokeapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6AEDC23-2DFA-40E4-B583-5ED357C91874}|TheBrokeAPI.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6AEDC23-2DFA-40E4-B583-5ED357C91874}|TheBrokeAPI.csproj|c:\\users\\felip\\onedrive\\documentos\\thebrokev1\\thebrokeapi\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{C6AEDC23-2DFA-40E4-B583-5ED357C91874}|TheBrokeAPI.csproj|solutionrelative:appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 144,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "TransacoesController.cs",
+              "DocumentMoniker": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\Controllers\\TransacoesController.cs",
+              "RelativeDocumentMoniker": "Controllers\\TransacoesController.cs",
+              "ToolTip": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\Controllers\\TransacoesController.cs",
+              "RelativeToolTip": "Controllers\\TransacoesController.cs",
+              "ViewState": "AQIAACMAAAAAAAAAAAAUwEAAAAAJAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-21T17:15:10.278Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Transacoes.cs",
+              "DocumentMoniker": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\Models\\Transacoes.cs",
+              "RelativeDocumentMoniker": "Models\\Transacoes.cs",
+              "ToolTip": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\Models\\Transacoes.cs",
+              "RelativeToolTip": "Models\\Transacoes.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAAApAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-21T17:11:32.551Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAVAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-04-21T17:05:24.589Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\Data\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "Data\\AppDbContext.cs",
+              "ToolTip": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\Data\\AppDbContext.cs",
+              "RelativeToolTip": "Data\\AppDbContext.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAABEAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-21T16:58:38.919Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Usuario.cs",
+              "DocumentMoniker": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\Models\\Usuario.cs",
+              "RelativeDocumentMoniker": "Models\\Usuario.cs",
+              "ToolTip": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\Models\\Usuario.cs",
+              "RelativeToolTip": "Models\\Usuario.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-21T16:57:30.201Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UsuariosController.cs",
+              "DocumentMoniker": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\Controllers\\UsuariosController.cs",
+              "RelativeDocumentMoniker": "Controllers\\UsuariosController.cs",
+              "ToolTip": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\Controllers\\UsuariosController.cs",
+              "RelativeToolTip": "Controllers\\UsuariosController.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-21T16:58:13.806Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABcAAAAhAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-21T16:56:39.138Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "appsettings.Development.json",
+              "ToolTip": "C:\\Users\\felip\\OneDrive\\Documentos\\TheBrokeV1\\TheBrokeAPI\\appsettings.Development.json",
+              "RelativeToolTip": "appsettings.Development.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-04-21T17:05:17.922Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
