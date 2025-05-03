@@ -6,6 +6,7 @@ import Login from '../views/auth/Login.vue'
 import Signup from '../views/auth/Signup.vue'
 import { useAuthStore } from '../stores/auth'
 import Investiments from '../views/Investiments.vue'
+import Goals from '../views/Goals.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -42,7 +43,14 @@ const router = createRouter({
       name: 'investiments',
       component: Investiments,
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/goals',
+      name: 'goals',
+      component: Goals,
+      meta: { requiresAuth: true }
     }
+
   ]
 })
 
