@@ -50,13 +50,14 @@ export const useTransactionsStore = defineStore('transactions', () => {
       })
   
       const response = await axios.post('http://localhost:5024/transacoes', {
+        idUsuario: idUsuario,
         tipo: transaction.type,
         categoria: transaction.category,
         valor: transaction.amount,
         descricao: transaction.description,
-        idUsuario: idUsuario,
+        dataTransacao: new Date(transaction.date).toISOString(),
       })
-  
+
       const novaTransacao = response.data
       transactions.value.push({
         id: novaTransacao.idTransacao.toString(),
