@@ -7,7 +7,7 @@
             Assuma o Controle das Suas Finanças
           </h1>
           <p class="text-lg text-gray-600 mb-8">
-            O Controlador de Investimentos ajuda você a acompanhar suas receitas e despesas, gerenciar seu orçamento e alcançar seus objetivos financeiros.
+            O The Broke Club ajuda você a acompanhar suas receitas e despesas, gerenciar seu orçamento e alcançar seus objetivos financeiros.
           </p>
           <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
             <router-link to="/signup" class="btn btn-primary text-center py-3 px-6 text-lg">

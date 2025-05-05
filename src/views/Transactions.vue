@@ -4,82 +4,88 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useTransactionsStore, Transaction } from '../stores/transactions'
 import TransactionForm from '../components/ui/TransactionForm.vue'
+import ImportCsv from '../components/ImportCsv.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const transactionsStore = useTransactionsStore()
 
+const showCsvImporter = ref(false)
+function openCsvImporter() {
+  showCsvImporter.value = true
+}
+
 const showForm = ref(false)
 const isEditing = ref(false)
 const currentTransaction = ref<Transaction | undefined>(undefined)
+
 const searchQuery = ref('')
 const selectedCategory = ref('')
 const selectedType = ref('')
 const dateFrom = ref('')
 const dateTo = ref('')
 
-const openAddForm = () => {
+function openAddForm() {
   isEditing.value = false
   currentTransaction.value = undefined
   showForm.value = true
 }
 
-const openEditForm = (transaction: Transaction) => {
+function openEditForm(tx: Transaction) {
   isEditing.value = true
-  currentTransaction.value = transaction
+  currentTransaction.value = tx
   showForm.value = true
 }
 
-const closeForm = () => {
+function closeForm() {
   showForm.value = false
 }
 
-const deleteTransaction = (id: string) => {
+function deleteTransaction(id: string) {
   if (confirm('Tem certeza que deseja excluir esta transação?')) {
     transactionsStore.deleteTransaction(id)
   }
 }
 
-const filteredTransactions = computed(() => {
-  return transactionsStore.transactions.filter(transaction => {
-    const matchesSearch = searchQuery.value === '' || 
-      transaction.description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      transaction.category.toLowerCase().includes(searchQuery.value.toLowerCase())
-    
-    const matchesCategory = selectedCategory.value === '' || 
-      transaction.category === selectedCategory.value
-    
-    const matchesType = selectedType.value === '' || 
-      transaction.type === selectedType.value
-    
-    let matchesDateRange = true
-    if (dateFrom.value) {
-      matchesDateRange = matchesDateRange && transaction.date >= dateFrom.value
-    }
-    if (dateTo.value) {
-      matchesDateRange = matchesDateRange && transaction.date <= dateTo.value
-    }
-    
-    return matchesSearch && matchesCategory && matchesType && matchesDateRange
-  }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-})
+const filteredTransactions = computed(() =>
+  transactionsStore.transactions
+    .filter(tx => {
+      const matchesSearch =
+        !searchQuery.value ||
+        tx.description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        tx.category.toLowerCase().includes(searchQuery.value.toLowerCase())
 
-const formatCurrency = (value: number) => {
+      const matchesCategory =
+        !selectedCategory.value || tx.category === selectedCategory.value
+
+      const matchesType =
+        !selectedType.value || tx.type === selectedType.value
+
+      let matchesDateRange = true
+      if (dateFrom.value) matchesDateRange &&= tx.date >= dateFrom.value
+      if (dateTo.value) matchesDateRange &&= tx.date <= dateTo.value
+
+      return matchesSearch && matchesCategory && matchesType && matchesDateRange
+    })
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+)
+
+function formatCurrency(v: number) {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL'
-  }).format(value)
+  }).format(v)
 }
 
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('pt-BR', {
+function formatDate(d: string) {
+  return new Date(d).toLocaleDateString('pt-BR', {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
   })
 }
 
-const resetFilters = () => {
+function resetFilters() {
   searchQuery.value = ''
   selectedCategory.value = ''
   selectedType.value = ''
@@ -94,29 +100,32 @@ onMounted(async () => {
     await transactionsStore.loadTransactions()
   }
 })
-
 </script>
 
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
       <h1 class="text-2xl font-bold text-gray-900 mb-4 md:mb-0">Transações</h1>
-      <button @click="openAddForm" class="btn btn-primary">
-        Adicionar Transação
-      </button>
+      <div class="flex  space-x-2">
+        <button @click="openAddForm" class="btn btn-primary">
+          Adicionar Transação
+        </button>
+        <button @click="openCsvImporter" class="btn btn-secondary">
+          Importar planilha
+        </button>
+      </div>
     </div>
-    
+
+    <ImportCsv
+      v-if="showCsvImporter"
+      @close="showCsvImporter = false"
+    />
+
     <div class="bg-white p-4 rounded-lg shadow-md mb-6">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div>
           <label for="search" class="label">Pesquisar</label>
-          <input
-            id="search"
-            v-model="searchQuery"
-            type="text"
-            class="input"
-            placeholder="Pesquisar transações..."
-          />
+          <input id="search" v-model="searchQuery" type="text" class="input" placeholder="Pesquisar transações..." />
         </div>
         <div>
           <label for="category" class="label">Categoria</label>
@@ -138,23 +147,19 @@ onMounted(async () => {
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label for="dateFrom" class="label">De</label>
-            <input
-              id="dateFrom"
-              v-model="dateFrom"
-              type="date"
-              class="input"
-            />
+            <input id="dateFrom" v-model="dateFrom" type="date" class="input" />
           </div>
           <div>
             <label for="dateTo" class="label">Até</label>
-            <input
-              id="dateTo"
-              v-model="dateTo"
-              type="date"
-              class="input"
-            />
+            <input id="dateTo" v-model="dateTo" type="date" class="input" />
           </div>
         </div>
+      </div>
+      <div>
+
+      </div>
+      <div class="mt-4 flex justify-end">
+
       </div>
       <div class="mt-4 flex justify-end">
         <button @click="resetFilters" class="btn btn-secondary">
@@ -162,7 +167,7 @@ onMounted(async () => {
         </button>
       </div>
     </div>
-    
+
     <!-- Transactions Table -->
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
       <div class="overflow-x-auto">
@@ -201,15 +206,13 @@ onMounted(async () => {
                 {{ transaction.category }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <span 
-                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                  :class="transaction.type === 'income' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-                >
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  :class="transaction.type === 'income' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
                   {{ transaction.type === 'income' ? 'Receita' : 'Despesa' }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium" 
-                  :class="transaction.type === 'income' ? 'text-success' : 'text-danger'">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium"
+                :class="transaction.type === 'income' ? 'text-success' : 'text-danger'">
                 {{ formatCurrency(transaction.amount) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -230,14 +233,10 @@ onMounted(async () => {
         </table>
       </div>
     </div>
-    
+
     <div v-if="showForm" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50 p-4">
       <div class="max-w-md w-full">
-        <TransactionForm 
-          :transaction="currentTransaction" 
-          :is-editing="isEditing" 
-          @close="closeForm" 
-        />
+        <TransactionForm :transaction="currentTransaction" :is-editing="isEditing" @close="closeForm" />
       </div>
     </div>
   </div>

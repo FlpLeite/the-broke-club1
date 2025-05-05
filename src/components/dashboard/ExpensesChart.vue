@@ -70,6 +70,7 @@ const chartOptions = {
 }
 </script>
 
+
 <template>
   <div class="card p-6">
     <div class="h-80">

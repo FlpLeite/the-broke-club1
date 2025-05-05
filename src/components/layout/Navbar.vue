@@ -25,6 +25,7 @@ const logout = () => {
         <div class="flex">
           <div class="flex-shrink-0 flex items-center">
             <router-link to="/" class="text-xl font-bold text-primary-600">
+
               The Broke Club
             </router-link>
           </div>
