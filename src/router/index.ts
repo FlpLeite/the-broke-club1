@@ -7,6 +7,7 @@ import Signup from '../views/auth/Signup.vue'
 import { useAuthStore } from '../stores/auth'
 import Investiments from '../views/Investiments.vue'
 import Goals from '../views/Goals.vue'
+import FinancialAnalysis from '../views/FinancialAnalysis.vue' // Componente direto em /views
 
 const router = createRouter({
   history: createWebHistory(),
@@ -49,8 +50,16 @@ const router = createRouter({
       name: 'goals',
       component: Goals,
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/financial-analysis',
+      name: 'financial-analysis',
+      component: FinancialAnalysis,
+      meta: { 
+        requiresAuth: true,
+        title: 'Análise Financeira IA' // Título para exibição
+      }
     }
-
   ]
 })
 
@@ -62,6 +71,12 @@ router.beforeEach((to, _from, next) => {
   } else {
     next()
   }
+})
+
+// Opcional: Definir título da página dinamicamente
+router.afterEach((to) => {
+  const title = to.meta.title || 'Meu App Financeiro'
+  document.title = `${title} | Meu App`
 })
 
 export default router
