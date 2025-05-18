@@ -57,7 +57,7 @@ const router = createRouter({
       component: FinancialAnalysis,
       meta: { 
         requiresAuth: true,
-        title: 'Análise Financeira IA' // Título para exibição
+        title: 'Análise Financeira IA'
       }
     }
   ]
@@ -73,7 +73,6 @@ router.beforeEach((to, _from, next) => {
   }
 })
 
-// Opcional: Definir título da página dinamicamente
 router.afterEach((to) => {
   const title = to.meta.title || 'Meu App Financeiro'
   document.title = `${title} | Meu App`
