@@ -132,3 +132,4 @@ C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\obj\Debug\net8.0\refin
 C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\obj\Debug\net8.0\TheBrokeAPI.pdb
 C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\obj\Debug\net8.0\TheBrokeAPI.genruntimeconfig.cache
 C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\obj\Debug\net8.0\ref\TheBrokeAPI.dll
+C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\obj\Debug\net8.0\TheBrokeAPI.sourcelink.json

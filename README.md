@@ -1,5 +1,9 @@
-# Vue 3 + TypeScript + Vite
+# 📌 The Broke Club
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## **📝 1. Objetivo do Projeto**
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+📍**Resumo:** Criar um site de finanças pessoais chamado ***The Broke Club*** com o propósito de ajudar pessoas que não possuem controle financeiro a começarem a organizar e economizar dinheiro.
+
+🔎 **Problema a ser resolvido:** Muitas pessoas não têm o hábito de registrar seus gastos, planejar suas finanças e criar metas de economia. Nosso site será uma ferramenta acessível e simples para quem deseja dar os primeiros passos na educação financeira.
+
+🎯 **Público-alvo:** Pessoas que desejam organizar suas finanças num geral, porém focado em pessoas q não possuem experiência com planejamento financeiro e querem aprender a controlar melhor seus ganhos e despesas.

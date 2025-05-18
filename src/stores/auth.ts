@@ -34,8 +34,13 @@ export const useAuthStore = defineStore('auth', {
         email,
         senhaHash: senha
       })
+      
 
       this.user = response.data
+    },
+
+    logout() {
+      this.user = null
     }
   }
 })

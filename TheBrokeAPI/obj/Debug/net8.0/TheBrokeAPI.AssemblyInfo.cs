@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TheBrokeAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b24c2cbc330b9469786aeb0bebdaa6f7393202ea")]
 [assembly: System.Reflection.AssemblyProductAttribute("TheBrokeAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TheBrokeAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
