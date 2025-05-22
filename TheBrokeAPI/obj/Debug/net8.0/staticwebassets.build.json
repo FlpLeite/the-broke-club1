@@ -1,11 +1,12 @@
 {
   "Version": 1,
-  "Hash": "QYCBMfAPVhoOUjHIrYjfz5dMapQ6EqJCz9mUdazetPU=",
+  "Hash": "rKRibAZFN/X835D8hoq1gZkvNNC55yYoCHKYlZH0eIQ=",
   "Source": "TheBrokeAPI",
   "BasePath": "_content/TheBrokeAPI",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [],
-  "Assets": []
+  "Assets": [],
+  "Endpoints": []
 }
