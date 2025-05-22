@@ -15,6 +15,9 @@ obj/
 # ===== Arquivos de ambiente =====
 .env
 .env.*
+appsettings.json
+appsettings.*.json
+secrets.json
 
 # ===== Node.js / npm =====
 node_modules/
