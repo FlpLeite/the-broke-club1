@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TheBrokeAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+382687c680be73d32dcb8cb50b72dceca74d8320")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5afeeaa0e9a67a9e0238e8d052f9f7d18412ac59")]
 [assembly: System.Reflection.AssemblyProductAttribute("TheBrokeAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TheBrokeAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

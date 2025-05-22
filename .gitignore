@@ -1,25 +1,36 @@
 # ===== .NET / C# =====
-bin/
-obj/
+## Build & Debug
+[Bb]in/
+[Oo]bj/
+*.pdb
+*.exe
+*.dll
+*.cache
+*.mdb
+*.csproj.user
 *.user
 *.suo
-*.cache
-*.csproj.user
-*.pdb
-*.mdb
+*.sourcelink.json
+apphost.exe
 
-# IDEs e ferramentas
+## Arquivos gerados em tempo de compilação
+TheBrokeAPI/bin/
+TheBrokeAPI/obj/
+**/bin/
+**/obj/
+
+# ===== Configurações de IDE =====
+.vs/
 .vscode/
 *.launch.json
 
 # ===== Arquivos de ambiente =====
 .env
 .env.*
-appsettings.json
-appsettings.*.json
-secrets.json
+*.env.local
+./.env
 
-# ===== Node.js / npm =====
+# ===== Node.js / npm (caso seu projeto use frontend) =====
 node_modules/
 npm-debug.log*
 yarn-debug.log*
@@ -30,7 +41,7 @@ dist/
 build/
 coverage/
 
-# ===== Outros arquivos temporários =====
+# ===== Outros arquivos temporários/lixo =====
 *.log
 .DS_Store
 Thumbs.db
