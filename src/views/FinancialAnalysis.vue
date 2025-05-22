@@ -103,6 +103,7 @@
               <i class="fas fa-paper-plane"></i>
             </button>
           </div>
+<<<<<<< HEAD
           
           <div v-if="!hasTransactions" class="warning-message">
             <i class="fas fa-exclamation-triangle"></i> Adicione transações para habilitar o chat
@@ -119,6 +120,25 @@
           >
             {{ suggestion }}
           </button>
+=======
+
+          <!-- Aqui usamos `renderedAdvice` com marcado HTML do Markdown -->
+          <div
+            class="prose prose-sm sm:prose lg:prose-lg max-w-none bg-gray-50 border-l-4 border-blue-600 p-4 rounded overflow-y-auto max-h-[32rem]"
+            v-html="renderedAdvice"
+          ></div>       
+        </div>
+
+        <!-- Estado inicial -->
+        <div v-else-if="!isLoading" class="text-center text-gray-600">
+          <h3 class="text-lg font-medium mb-2">Descubra insights sobre suas finanças</h3>
+          <p>Clique no botão para receber uma análise completa do seu histórico financeiro.</p>
+        </div>
+
+        <!-- Spinner no card -->
+        <div v-else class="text-center py-12">
+          <i class="fas fa-spinner fa-spin text-2xl text-gray-400"></i>
+>>>>>>> 8cfdc1b643f3e0f196c8d20e135f0a34a360a511
         </div>
       </div>
     </div>
@@ -142,6 +162,7 @@ const error = ref('');
 const advice = ref('');
 const activeTab = ref('analysis');
 
+<<<<<<< HEAD
 // Variáveis para o chat
 const chatMessages = ref<Array<{
   role: 'user' | 'assistant';
@@ -151,6 +172,12 @@ const chatMessages = ref<Array<{
 const userMessage = ref('');
 const isChatLoading = ref(false);
 const chatContainer = ref<HTMLElement | null>(null);
+=======
+const hasTransactions = computed(() =>
+  transactionsStore.transactions.length > 0 &&
+  !transactionsStore.transactions.some(t => isNaN(t.amount))
+)
+>>>>>>> 8cfdc1b643f3e0f196c8d20e135f0a34a360a511
 
 const suggestedQuestions = [
   "Quais são meus maiores gastos este mês?",
@@ -244,6 +271,7 @@ const sendMessage = async () => {
       chatHistory: chatMessages.value.slice(0, -1) // Exclui a última mensagem (a atual)
     });
 
+<<<<<<< HEAD
     // Adiciona resposta da IA
     chatMessages.value.push({
       role: 'assistant' as const,
@@ -642,5 +670,23 @@ onMounted(async () => {
   font-weight: bold;
   position: absolute;
   left: 0;
+=======
+const renderedAdvice = computed(() => {
+  return marked(advice.value || '')
+})
+</script>
+
+<style scoped>
+.prose h1 { @apply text-3xl font-bold text-gray-900 mb-4; }
+.prose h2 { @apply text-2xl font-semibold text-gray-800 mt-8 mb-4; }
+.prose h3 { @apply text-xl font-semibold text-gray-800 mt-6 mb-3; }
+.prose ul { @apply list-disc list-inside mb-4; }
+.prose li { @apply mb-2; }
+.prose p  { @apply mb-4; }
+.prose strong { @apply font-semibold text-gray-900; }
+.prose {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+>>>>>>> 8cfdc1b643f3e0f196c8d20e135f0a34a360a511
 }
 </style>
