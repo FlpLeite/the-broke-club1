@@ -28,6 +28,7 @@ TheBrokeAPI/obj/
 .env
 .env.*
 *.env.local
+./.env
 
 # ===== Node.js / npm (caso seu projeto use frontend) =====
 node_modules/
