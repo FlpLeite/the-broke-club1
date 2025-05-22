@@ -5,7 +5,7 @@ interface User {
   idUsuario: number;
   nome: string;
   email: string;
-  senhaHash: string;
+  senha: string;
   dataCriacao: string;
 }
 
@@ -19,11 +19,11 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    async signup(nome: string, email: string, senhaHash: string) {
+    async signup(nome: string, email: string, senha: string) {
       const response = await axios.post('http://localhost:5024/usuarios', {
         nome,
         email,
-        senhaHash
+        senha
       })
 
       this.user = response.data
@@ -32,7 +32,7 @@ export const useAuthStore = defineStore('auth', {
     async login(email: string, senha: string) {
       const response = await axios.post('http://localhost:5024/usuarios/login', {
         email,
-        senhaHash: senha
+        senha: senha
       })
       
 

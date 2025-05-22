@@ -52,7 +52,7 @@
         <!-- Estado inicial -->
         <div v-else-if="!isLoading" class="text-center text-gray-600">
           <h3 class="text-lg font-medium mb-2">Descubra insights sobre suas finanças</h3>
-          <p>Clique no botão acima para receber uma análise completa do seu histórico financeiro.</p>
+          <p>Clique no botão para receber uma análise completa do seu histórico financeiro.</p>
         </div>
 
         <!-- Spinner no card -->
@@ -80,7 +80,6 @@ const isLoading = ref(false)
 const error     = ref('')
 const advice    = ref('')
 
-// Só habilita se houver transações válidas
 const hasTransactions = computed(() =>
   transactionsStore.transactions.length > 0 &&
   !transactionsStore.transactions.some(t => isNaN(t.amount))
@@ -125,14 +124,12 @@ function sendFeedback(type: 'helpful' | 'not-helpful') {
   console.log('Feedback:', type)
 }
 
-// Renderiza o Markdown em HTML seguro
 const renderedAdvice = computed(() => {
   return marked(advice.value || '')
 })
 </script>
 
 <style scoped>
-/* Tipografia Markdown com Tailwind Typography */
 .prose h1 { @apply text-3xl font-bold text-gray-900 mb-4; }
 .prose h2 { @apply text-2xl font-semibold text-gray-800 mt-8 mb-4; }
 .prose h3 { @apply text-xl font-semibold text-gray-800 mt-6 mb-3; }

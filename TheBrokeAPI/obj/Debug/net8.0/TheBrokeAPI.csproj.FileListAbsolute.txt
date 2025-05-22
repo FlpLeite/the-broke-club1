@@ -133,3 +133,12 @@ C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\obj\Debug\net8.0\TheBr
 C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\obj\Debug\net8.0\TheBrokeAPI.genruntimeconfig.cache
 C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\obj\Debug\net8.0\ref\TheBrokeAPI.dll
 C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\obj\Debug\net8.0\TheBrokeAPI.sourcelink.json
+C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\felip\OneDrive\Documentos\TheBrokeV1\TheBrokeAPI\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll

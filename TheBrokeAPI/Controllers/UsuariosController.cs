@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TheBrokeClub.API.Data;
 using TheBrokeClub.API.Models;
+using BCrypt.Net;
+using TheBrokeClub.API.Dtos;
+
 
 namespace TheBrokeClub.API.Controllers;
 
@@ -17,51 +20,82 @@ public class UsuarioController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
+    public async Task<ActionResult<IEnumerable<UsuarioResponseDto>>> GetUsuarios()
     {
-        return await _context.Usuarios.ToListAsync();
+        var usuarios = await _context.Usuarios
+            .Select(u => new UsuarioResponseDto
+            {
+                IdUsuario = u.IdUsuario,
+                Nome = u.Nome,
+                Email = u.Email
+            })
+            .ToListAsync();
+
+        return usuarios;
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Usuario>> GetUsuario(int id)
+    public async Task<ActionResult<UsuarioResponseDto>> GetUsuario(int id)
     {
-        var usuario = await _context.Usuarios.FindAsync(id);
+        var usuario = await _context.Usuarios
+            .Where(u => u.IdUsuario == id)
+            .Select(u => new UsuarioResponseDto
+            {
+                IdUsuario = u.IdUsuario,
+                Nome = u.Nome,
+                Email = u.Email
+            })
+            .FirstOrDefaultAsync();
+
         if (usuario == null) return NotFound();
         return usuario;
     }
 
     [HttpPost]
-    public async Task<ActionResult<Usuario>> CreateUsuario(Usuario usuario)
+    public async Task<ActionResult<UsuarioResponseDto>> CreateUsuario([FromBody] UsuarioCreateDto dto)
     {
-        usuario.DataCriacao = DateTime.UtcNow;
+        // Validação de e-mail único
+        if (_context.Usuarios.Any(u => u.Email == dto.Email))
+            return BadRequest("E-mail já cadastrado.");
+
+        var usuario = new Usuario
+        {
+            Nome = dto.Nome,
+            Email = dto.Email,
+            SenhaHash = BCrypt.Net.BCrypt.HashPassword(dto.Senha),
+            DataCriacao = DateTime.UtcNow
+        };
+
         _context.Usuarios.Add(usuario);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetUsuario), new { id = usuario.IdUsuario }, usuario);
+        return CreatedAtAction(nameof(GetUsuario), new { id = usuario.IdUsuario },
+            new UsuarioResponseDto
+            {
+                IdUsuario = usuario.IdUsuario,
+                Nome = usuario.Nome,
+                Email = usuario.Email
+            });
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUsuario(int id, Usuario usuario)
+    public async Task<IActionResult> UpdateUsuario(int id, [FromBody] UsuarioUpdateDto dto)
     {
-        if (id != usuario.IdUsuario)
-            return BadRequest();
+        var usuario = await _context.Usuarios.FindAsync(id);
+        if (usuario == null)
+            return NotFound();
 
-        _context.Entry(usuario).State = EntityState.Modified;
+        if (_context.Usuarios.Any(u => u.Email == dto.Email && u.IdUsuario != id))
+            return BadRequest("E-mail já cadastrado para outro usuário.");
 
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!_context.Usuarios.Any(u => u.IdUsuario == id))
-                return NotFound();
+        usuario.Nome = dto.Nome;
+        usuario.Email = dto.Email;
 
-            throw;
-        }
+        await _context.SaveChangesAsync();
 
         return NoContent();
     }
+
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUsuario(int id)
@@ -77,15 +111,37 @@ public class UsuarioController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<Usuario>> Login([FromBody] Usuario loginInfo)
+    public async Task<ActionResult<UsuarioResponseDto>> Login([FromBody] UsuarioLoginDto loginInfo)
     {
         var usuario = await _context.Usuarios
-            .FirstOrDefaultAsync(u => u.Email == loginInfo.Email && u.SenhaHash == loginInfo.SenhaHash);
+            .FirstOrDefaultAsync(u => u.Email == loginInfo.Email);
 
-        if (usuario == null)
+        if (usuario == null || !BCrypt.Net.BCrypt.Verify(loginInfo.Senha, usuario.SenhaHash))
             return Unauthorized("E-mail ou senha inválidos.");
 
-        return Ok(usuario);
+        return Ok(new UsuarioResponseDto
+        {
+            IdUsuario = usuario.IdUsuario,
+            Nome = usuario.Nome,
+            Email = usuario.Email
+        });
     }
+
+    [HttpPut("{id}/senha")]
+    public async Task<IActionResult> UpdateSenha(int id, [FromBody] UsuarioUpdateSenhaDto dto)
+    {
+        var usuario = await _context.Usuarios.FindAsync(id);
+        if (usuario == null)
+            return NotFound();
+
+        if (!BCrypt.Net.BCrypt.Verify(dto.SenhaAtual, usuario.SenhaHash))
+            return Unauthorized("Senha atual incorreta.");
+
+        usuario.SenhaHash = BCrypt.Net.BCrypt.HashPassword(dto.NovaSenha);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
 
 }
