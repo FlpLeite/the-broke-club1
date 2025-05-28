@@ -4,7 +4,7 @@
       <div class="flex flex-col md:flex-row justify-between items-center">
         <div class="mb-4 md:mb-0">
           <p class="text-sm text-gray-500">
-            &copy; {{ new Date().getFullYear() }} Controlador de Investimentos. Todos os direitos reservados.
+            &copy; {{ new Date().getFullYear() }} The Broke Club. Todos os direitos reservados.
           </p>
         </div>
         <div class="flex space-x-6">

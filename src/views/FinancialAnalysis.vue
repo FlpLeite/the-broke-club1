@@ -6,15 +6,15 @@
     </div>
 
     <div class="tabs">
-      <button 
-        @click="activeTab = 'analysis'" 
+      <button
+        @click="activeTab = 'analysis'"
         :class="{ active: activeTab === 'analysis' }"
         class="tab-button"
       >
         <i class="fas fa-chart-pie"></i> Análise Automática
       </button>
-      <button 
-        @click="activeTab = 'chat'" 
+      <button
+        @click="activeTab = 'chat'"
         :class="{ active: activeTab === 'chat' }"
         class="tab-button"
       >
@@ -25,8 +25,8 @@
     <div v-if="activeTab === 'analysis'" class="content-card">
       <!-- Conteúdo existente da análise -->
       <div class="analysis-controls">
-        <button 
-          @click="analyzeFinances" 
+        <button
+          @click="analyzeFinances"
           :disabled="isLoading || !hasTransactions"
           class="analyze-button"
         >
@@ -37,7 +37,7 @@
             <i class="fas fa-spinner fa-spin"></i> Analisando...
           </span>
         </button>
-        
+
         <div v-if="!hasTransactions" class="warning-message">
           <i class="fas fa-exclamation-triangle"></i> Adicione transações para habilitar a análise
         </div>
@@ -62,19 +62,23 @@
 
     <div v-if="activeTab === 'chat'" class="content-card chat-container">
       <div class="chat-messages" ref="chatContainer">
-        <div 
-          v-for="(message, index) in chatMessages" 
-          :key="index" 
+        <div
+          v-for="(message, index) in chatMessages"
+          :key="index"
           :class="['message', message.role]"
           >
           <div class="message-header">
-            <img src="../assets/Penny.png" alt="Penny - Assistente Financeira" class="empty-image-profile">
+            <img
+                :src="message.role === 'user' ? userAvatar : pennyAvatar"
+                :alt="message.role === 'user' ? 'Seu avatar' : 'Penny - Assistente Financeira'"
+                class="empty-image-profile"
+            />
             <strong>{{ message.role === 'user' ? 'Você' : 'Penny' }}</strong>
             <span class="message-time">{{ formatTime(message.timestamp) }}</span>
           </div>
           <div class="message-content" v-html="formatMessage(message.content)"></div>
         </div>
-        
+
         <div v-if="isChatLoading" class="message assistant">
           <div class="message-header">
             <strong>Penny</strong>
@@ -95,24 +99,24 @@
               :disabled="isChatLoading || !hasTransactions"
               class="chat-input"
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               :disabled="!userMessage || isChatLoading || !hasTransactions"
               class="send-button"
             >
               <i class="fas fa-paper-plane"></i>
             </button>
           </div>
-          
+
           <div v-if="!hasTransactions" class="warning-message">
             <i class="fas fa-exclamation-triangle"></i> Adicione transações para habilitar o chat
           </div>
         </form>
-        
+
         <div class="suggestions">
           <p>Tente perguntar:</p>
-          <button 
-            v-for="(suggestion, index) in suggestedQuestions" 
+          <button
+            v-for="(suggestion, index) in suggestedQuestions"
             :key="index"
             @click="userMessage = suggestion; sendMessage()"
             class="suggestion-button"
@@ -131,6 +135,9 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { useTransactionsStore } from '../stores/transactions';
 import { geminiService } from '../services/iaService';
+import pennyAvatar from '../assets/Penny.png'
+import userAvatar from '../assets/user.svg'
+
 
 const authStore = useAuthStore();
 const transactionsStore = useTransactionsStore();
@@ -161,7 +168,7 @@ const suggestedQuestions = [
 ];
 
 const hasTransactions = computed(() => {
-  return transactionsStore.transactions.length > 0 && 
+  return transactionsStore.transactions.length > 0 &&
          !transactionsStore.transactions.some(t => isNaN(t.amount));
 });
 
@@ -173,11 +180,11 @@ const loadData = async () => {
     }
 
     await transactionsStore.loadTransactions();
-    
+
     if (transactionsStore.transactions.some(t => isNaN(t.amount))) {
       throw new Error('Dados de transações inválidos');
     }
-    
+
     return true;
   } catch (err) {
     console.error('Erro ao carregar transações:', err);
@@ -198,13 +205,13 @@ const analyzeFinances = async () => {
 
   try {
     const loaded = await loadData();
-    
+
     if (!loaded || !hasTransactions.value) {
       error.value = 'Dados insuficientes para análise. Adicione transações válidas.';
       return;
     }
 
-    const timeout = new Promise((_, reject) => 
+    const timeout = new Promise((_, reject) =>
       setTimeout(() => reject(new Error('Tempo excedido na análise')), 30000)
     );
 
@@ -212,7 +219,7 @@ const analyzeFinances = async () => {
       geminiService.getFinancialAdvice(transactionsStore.transactions),
       timeout
     ]);
-    
+
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Erro desconhecido';
     console.error('Erro na análise:', err);
@@ -231,11 +238,11 @@ const sendMessage = async () => {
     timestamp: new Date()
   };
   chatMessages.value.push(userMsg);
-  
+
   const message = userMessage.value;
   userMessage.value = '';
   isChatLoading.value = true;
-  
+
   try {
     // Chama o serviço da IA
     const response = await geminiService.chatWithAI({
@@ -250,7 +257,7 @@ const sendMessage = async () => {
       content: response,
       timestamp: new Date()
     });
-    
+
   } catch (err) {
     console.error('Erro no chat:', err);
     chatMessages.value.push({
@@ -294,7 +301,7 @@ onMounted(async () => {
   if (!authStore.isAuthenticated) {
     await router.push({ name: 'login' });
   }
-  
+
   // Mensagem inicial do chat
   chatMessages.value.push({
     role: 'assistant',
@@ -599,10 +606,9 @@ onMounted(async () => {
 .empty-state ul {
   text-align: left;
   display: inline-block;
-  margin-top: 1rem;
+  margin-top: 0rem;
 }
 
-/* Rich text formatting */
 .advice-content :deep(strong),
 .message-content :deep(strong) {
   color: #2c3e50;
