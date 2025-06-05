@@ -70,7 +70,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl font-bold text-white mb-4">Pronto para Assumir o Controle das Suas Finanças?</h2>
         <p class="text-xl text-primary-100 mb-8">
-          Junte-se a milhares de usuários que já estão gerenciando suas finanças com o Controlador de Investimentos.
+          Junte-se a milhares de usuários que já estão gerenciando suas finanças com o The Broke Club.
         </p>
         <router-link to="/signup" class="inline-block btn bg-white text-primary-600 hover:bg-gray-100 py-3 px-8 text-lg font-medium">
           Cadastre-se Agora
