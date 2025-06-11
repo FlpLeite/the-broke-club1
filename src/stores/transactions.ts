@@ -56,7 +56,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
         valor: transaction.amount,
         descricao: transaction.description,
         dataTransacao: new Date(transaction.date).toISOString(),
-      })
+      }, { headers: { Authorization: `Bearer ${authStore.token}` } })
 
       const novaTransacao = response.data
       transactions.value.push({
@@ -90,7 +90,8 @@ export const useTransactionsStore = defineStore('transactions', () => {
         DataTransacao: new Date(updated.date).toISOString()
       }
   
-      await axios.put(`http://localhost:5024/transacoes/${id}`, payload)
+      await axios.put(`http://localhost:5024/transacoes/${id}`, payload,
+        { headers: { Authorization: `Bearer ${authStore.token}` } })
       
       await loadTransactions()
     } catch (error) {
@@ -107,7 +108,8 @@ export const useTransactionsStore = defineStore('transactions', () => {
       const idUsuario = authStore.user?.idUsuario
       if (!idUsuario) throw new Error('Usuário não autenticado.')
   
-      await axios.delete(`http://localhost:5024/transacoes/${id}`)
+      await axios.delete(`http://localhost:5024/transacoes/${id}`,
+        { headers: { Authorization: `Bearer ${authStore.token}` } })
   
       transactions.value = transactions.value.filter(t => t.id !== id)
     } catch (error) {
@@ -155,7 +157,8 @@ export const useTransactionsStore = defineStore('transactions', () => {
         throw new Error('Usuário não autenticado.')
       }
   
-      const response = await axios.get(`http://localhost:5024/transacoes/usuario/${idUsuario}`)
+      const response = await axios.get(`http://localhost:5024/transacoes/usuario/${idUsuario}`,
+        { headers: { Authorization: `Bearer ${authStore.token}` } })
       transactions.value = response.data.map((t: any) => ({
         id: t.idTransacao.toString(),
         date: new Date(t.dataTransacao).toISOString().split('T')[0],

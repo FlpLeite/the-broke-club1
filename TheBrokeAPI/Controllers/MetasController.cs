@@ -17,6 +17,7 @@ namespace TheBrokeClub.API.Controllers
     }
 
     [ApiController]
+    [Authorize]
     [Route("metas")]
     public class MetasController : ControllerBase
     {
