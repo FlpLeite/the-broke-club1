@@ -28,12 +28,12 @@ const expensesByCategory = computed(() => {
 const chartData = computed(() => {
   const labels = Object.keys(expensesByCategory.value)
   const data = Object.values(expensesByCategory.value)
-  
+
   const backgroundColors = labels.map((_, index) => {
     const hue = (index * 137) % 360
     return `hsl(${hue}, 70%, 60%)`
   })
-  
+
   return {
     labels,
     datasets: [

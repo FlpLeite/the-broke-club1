@@ -376,6 +376,11 @@ onMounted(async () => {
   padding: 2rem;
 }
 
+.dark .content-card {
+  background-color: #121C2A;
+  color: #F3F7FA;
+}
+
 .chat-container {
   display: flex;
   flex-direction: column;
@@ -391,6 +396,10 @@ onMounted(async () => {
   background-color: #f9f9f9;
 }
 
+.dark .chat-messages {
+  background-color: #1F2937;
+}
+
 .message {
   margin-bottom: 1rem;
   padding: 0.75rem 1rem;
@@ -404,10 +413,18 @@ onMounted(async () => {
   border-bottom-right-radius: 0;
 }
 
+.dark .message.user {
+  background-color: rgba(37, 99, 235, 0.3);
+}
+
 .message.assistant {
   margin-right: auto;
   background-color: #f1f1f1;
   border-bottom-left-radius: 0;
+}
+
+.dark .message.assistant {
+  background-color: #374151;
 }
 
 .message-header {
@@ -416,7 +433,7 @@ onMounted(async () => {
   gap: 8px;
   margin-bottom: 0.5rem;
   font-size: 0.85rem;
-  color: #555;
+  color: #9c9c9c;
 }
 
 .message-time {
@@ -444,6 +461,12 @@ onMounted(async () => {
   border-radius: 24px;
   font-size: 1rem;
   transition: all 0.3s;
+}
+
+.dark .chat-input {
+  background-color: #1F2937;
+  border-color: #4B5563;
+  color: #F3F7FA;
 }
 
 .chat-input:focus {
@@ -498,11 +521,20 @@ onMounted(async () => {
   transition: all 0.2s;
 }
 
+.dark .suggestion-button {
+  background-color: #374151;
+  border-color: #4B5563;
+  color: #E5E7EB;
+}
+
 .suggestion-button:hover {
   background-color: #e0e0e0;
 }
 
-/* Estilos existentes mantidos */
+.dark .suggestion-button:hover {
+  background-color: #4B5563;
+}
+
 .analysis-controls {
   display: flex;
   flex-direction: column;
@@ -567,6 +599,11 @@ onMounted(async () => {
   background-color: #f9f9f9;
   border-radius: 8px;
   border-left: 4px solid #4CAF50;
+}
+
+.dark .advice-content {
+  background-color: #1F2937;
+  color: #F3F7FA;
 }
 
 .empty-state {
