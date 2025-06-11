@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gradient-to-b from-primary-50 to-white">
+  <div class="bg-gradient-to-b from-primary-50 to-white dark:from-gray-900 dark:to-gray-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
         <div>
@@ -20,7 +20,7 @@
         </div>
         <div class="hidden md:block">
           <div class="flex items-center justify-center">
-            <img src="../assets/logoBroke4.png" alt="The Broke Club" class="w-64 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <img src="../assets/logoBrokeDark2.png" alt="The Broke Club" class="w-65" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           </div>
         </div>
       </div>
@@ -29,7 +29,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
       <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Principais Recursos</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
           <div class="text-primary-500 mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -40,7 +40,7 @@
             Registre e categorize facilmente suas receitas e despesas para acompanhar para onde seu dinheiro está indo.
           </p>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
           <div class="text-primary-500 mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
@@ -52,7 +52,7 @@
             Veja seus dados financeiros em gráficos claros e intuitivos para entender melhor seus hábitos de gastos.
           </p>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
           <div class="text-primary-500 mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -72,7 +72,7 @@
         <p class="text-xl text-primary-100 mb-8">
           Junte-se a milhares de usuários que já estão gerenciando suas finanças com o The Broke Club.
         </p>
-        <router-link to="/signup" class="inline-block btn bg-white text-primary-600 hover:bg-gray-100 py-3 px-8 text-lg font-medium">
+        <router-link to="/signup" class="inline-block btn bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-300 hover:bg-gray-100 dark:hover:bg-gray-700 py-3 px-8 text-lg font-medium">
           Cadastre-se Agora
         </router-link>
       </div>
