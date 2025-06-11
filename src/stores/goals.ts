@@ -24,8 +24,9 @@ export const useGoalsStore = defineStore('goals', () => {
   const goals = ref<Goal[]>([])
 
   async function loadGoals() {
-    if (!userId.value) return
-    const res = await axios.get(`http://localhost:5024/metas/usuario/${userId.value}`)
+    if (!userId.value || !authStore.token) return
+    const res = await axios.get(`http://localhost:5024/metas/usuario/${userId.value}`,
+      { headers: { Authorization: `Bearer ${authStore.token}` } })
     goals.value = res.data.map((m: any) => ({
       id:         m.idObjetivo.toString(),  
       titulo:     m.titulo,                 
@@ -44,32 +45,33 @@ export const useGoalsStore = defineStore('goals', () => {
   async function addGoal(payload: CreateGoalPayload) {
     if (!userId.value) return
     await axios.post('http://localhost:5024/metas', {
-      idUsuario:  userId.value,          
+      idUsuario:  userId.value,
       titulo:     payload.titulo,
       categoria:  payload.categoria,
-      valorMeta:  payload.valorMeta,     
+      valorMeta:  payload.valorMeta,
       valorAtual: 0,
-      dataLimite: new Date(payload.dataLimite).toISOString(),   
+      dataLimite: new Date(payload.dataLimite).toISOString(),
       descricao:  payload.descricao
-    })
+    }, { headers: { Authorization: `Bearer ${authStore.token}` } })
     await loadGoals()
   }
 
   async function updateGoal(id: string, payload: UpdateGoalPayload) {
     await axios.put(`http://localhost:5024/metas/${id}`, {
-      idObjetivo: Number(id),            
+      idObjetivo: Number(id),
       titulo:     payload.titulo,
       categoria:  payload.categoria,
       valorMeta:  payload.valorMeta,
       valorAtual: payload.valorAtual,
       dataLimite: new Date(payload.dataLimite!).toISOString(),
       descricao:  payload.descricao
-    })
+    }, { headers: { Authorization: `Bearer ${authStore.token}` } })
     await loadGoals()
   }
 
   async function deleteGoal(id: string) {
-    await axios.delete(`http://localhost:5024/metas/${id}`)
+    await axios.delete(`http://localhost:5024/metas/${id}`,
+      { headers: { Authorization: `Bearer ${authStore.token}` } })
     await loadGoals()
   }
   async function updateGoalProgress(id: string, amount: number | string) {
@@ -79,7 +81,8 @@ export const useGoalsStore = defineStore('goals', () => {
   
     await axios.patch(
       `http://localhost:5024/metas/${id}/progresso`,
-      { valor }
+      { valor },
+      { headers: { Authorization: `Bearer ${authStore.token}` } }
     );
   
     await loadGoals();

@@ -11,11 +11,12 @@ interface User {
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null as User | null, 
+    user: null as User | null,
+    token: null as string | null
   }),
 
   getters: {
-    isAuthenticated: (state) => !!state.user
+    isAuthenticated: (state) => !!state.user && !!state.token
   },
 
   actions: {
@@ -34,13 +35,16 @@ export const useAuthStore = defineStore('auth', {
         email,
         senha: senha
       })
-      
 
-      this.user = response.data
+      this.token = response.data.token
+      this.user = response.data.usuario
+      axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
     },
 
     logout() {
       this.user = null
+      this.token = null
+      delete axios.defaults.headers.common['Authorization']
     }
   }
 })
