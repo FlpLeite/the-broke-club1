@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 
@@ -7,10 +7,29 @@ const router = useRouter()
 const authStore = useAuthStore()
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const mobileMenuOpen = ref(false)
+const isDark = ref(false)
 
 const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value
 }
+
+const toggleDarkMode = () => {
+  isDark.value = !isDark.value
+  if (isDark.value) {
+    document.documentElement.classList.add('dark')
+    localStorage.setItem('theme', 'dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+    localStorage.setItem('theme', 'light')
+  }
+}
+
+onMounted(() => {
+  isDark.value = localStorage.getItem('theme') === 'dark'
+  if (isDark.value) {
+    document.documentElement.classList.add('dark')
+  }
+})
 
 const logout = () => {
   authStore.logout()
@@ -19,7 +38,7 @@ const logout = () => {
 </script>
 
 <template>
-  <nav class="bg-white shadow-md">
+  <nav class="bg-white shadow-md dark:bg-[#121C2A]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
         <div class="flex">
@@ -69,6 +88,9 @@ const logout = () => {
               Cadastrar
             </router-link>
           </template>
+          <button @click="toggleDarkMode" class="ml-3 btn btn-secondary">
+            {{ isDark ? 'Tema Claro' : 'Tema Escuro' }}
+          </button>
         </div>
         <div class="-mr-2 flex items-center sm:hidden">
           <button @click="toggleMobileMenu" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500">
@@ -112,6 +134,9 @@ const logout = () => {
               </router-link>
             </div>
           </template>
+          <button @click="toggleDarkMode" class="mt-2 w-full btn btn-secondary">
+            {{ isDark ? 'Tema Claro' : 'Tema Escuro' }}
+          </button>
         </div>
       </div>
     </div>

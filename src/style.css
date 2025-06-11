@@ -39,3 +39,18 @@ body {
 #app {
   @apply min-h-screen;
 }
+
+.dark body {
+  background-color: #0D1520;
+  color: #F3F7FA;
+}
+
+.dark .card {
+  background-color: #121C2A;
+  color: #F3F7FA;
+}
+
+.dark .btn-primary {
+  background-color: #3267FF;
+  color: #F3F7FA;
+}
