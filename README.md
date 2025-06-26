@@ -1,4 +1,5 @@
 # The Broke Club
+> **"The Broke Club, o único grupo que você entra pra sair."**
 
 [![Status](https://img.shields.io/badge/status-em%20desenvolvimento-blue)]()
 [![GitHub stars](https://img.shields.io/github/stars/FlpLeite/the-broke-club1)](https://github.com/FlpLeite/the-broke-club1/stargazers)
@@ -136,7 +137,3 @@ Feito com orgulho por [Felipe Leite](https://github.com/FlpLeite) e colaboradore
 ## 🖤 Agradecimentos
 
 A todos que acreditam na mudança, na tecnologia acessível e na força de aprender sobre dinheiro mesmo sem nunca ter ouvido falar de CDB, CDI ou Tesouro Direto!
-
----
-
-> **"The Broke Club, o único grupo que você entra pra sair."**
