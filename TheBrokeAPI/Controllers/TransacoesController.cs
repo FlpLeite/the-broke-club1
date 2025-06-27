@@ -7,6 +7,7 @@ using TheBrokeClub.API.Models;
 namespace TheBrokeClub.API.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("transacoes")]
 public class TransacoesController : ControllerBase
 {

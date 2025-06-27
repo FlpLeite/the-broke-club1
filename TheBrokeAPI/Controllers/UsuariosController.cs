@@ -1,5 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using TheBrokeClub.API.Data;
 using TheBrokeClub.API.Models;
 using BCrypt.Net;
@@ -13,12 +18,14 @@ namespace TheBrokeClub.API.Controllers;
 public class UsuarioController : ControllerBase
 {
     private readonly AppDbContext _context;
-
-    public UsuarioController(AppDbContext context)
+    private readonly IConfiguration _config;
+    public UsuarioController(AppDbContext context, IConfiguration config)
     {
+        _config = config;
         _context = context;
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<UsuarioResponseDto>>> GetUsuarios()
     {
@@ -34,6 +41,7 @@ public class UsuarioController : ControllerBase
         return usuarios;
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<UsuarioResponseDto>> GetUsuario(int id)
     {
@@ -54,18 +62,34 @@ public class UsuarioController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<UsuarioResponseDto>> CreateUsuario([FromBody] UsuarioCreateDto dto)
     {
-        // ValidaÁ„o de e-mail ˙nico
-        if (_context.Usuarios.Any(u => u.Email == dto.Email))
-            return BadRequest("E-mail j· cadastrado.");
+    [Authorize]
+    [Authorize]
+    [AllowAnonymous]
+    public async Task<ActionResult<LoginResponseDto>> Login([FromBody] UsuarioLoginDto loginInfo)
+        var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == loginInfo.Email);
+            return Unauthorized("E-mail ou senha inv√°lidos.");
 
-        var usuario = new Usuario
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? "uma_chave_muito_segura_para_dev"));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var claims = new[]
         {
-            Nome = dto.Nome,
-            Email = dto.Email,
-            SenhaHash = BCrypt.Net.BCrypt.HashPassword(dto.Senha),
-            DataCriacao = DateTime.UtcNow
+            new Claim(JwtRegisteredClaimNames.Sub, usuario.IdUsuario.ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, usuario.Email)
         };
+        var token = new JwtSecurityToken(claims: claims, expires: DateTime.UtcNow.AddHours(1), signingCredentials: creds);
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+        return Ok(new LoginResponseDto
+            Token = tokenString,
+            Usuario = new UsuarioResponseDto
+            {
+                IdUsuario = usuario.IdUsuario,
+                Nome = usuario.Nome,
+                Email = usuario.Email
+            }
 
+
+
+    [Authorize]
         _context.Usuarios.Add(usuario);
         await _context.SaveChangesAsync();
 
@@ -86,7 +110,7 @@ public class UsuarioController : ControllerBase
             return NotFound();
 
         if (_context.Usuarios.Any(u => u.Email == dto.Email && u.IdUsuario != id))
-            return BadRequest("E-mail j· cadastrado para outro usu·rio.");
+            return BadRequest("E-mail j√° cadastrado para outro usu√°rio.");
 
         usuario.Nome = dto.Nome;
         usuario.Email = dto.Email;
@@ -117,7 +141,7 @@ public class UsuarioController : ControllerBase
             .FirstOrDefaultAsync(u => u.Email == loginInfo.Email);
 
         if (usuario == null || !BCrypt.Net.BCrypt.Verify(loginInfo.Senha, usuario.SenhaHash))
-            return Unauthorized("E-mail ou senha inv·lidos.");
+            return Unauthorized("E-mail ou senha inv√°lidos.");
 
         return Ok(new UsuarioResponseDto
         {
