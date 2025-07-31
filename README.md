@@ -101,6 +101,16 @@ the-broke-club1/
 ```
 
 ---
+🚀 Deploy
+O projeto ainda está em fase de desenvolvimento, mas em breve estará disponível para acesso online!
+
+🧪 Ambiente de testes: em breve
+
+🌐 Versão pública (produção): em breve
+
+📱 App mobile: planejado para fases futuras
+
+Fique de olho! 🚨 Atualizaremos aqui assim que o deploy estiver disponível.
 
 ## 📚 Documentação
 
