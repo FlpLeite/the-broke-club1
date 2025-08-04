@@ -7,14 +7,14 @@ const router = useRouter()
 const authStore = useAuthStore()
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const mobileMenuOpen = ref(false)
-const isDark = ref(false)
+const isLight = ref(true)
 
 const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value
 }
 
 const onThemeChange = () => {
-  if (isDark.value) {
+  if (!isLight.value) {
     document.documentElement.classList.add('dark')
     localStorage.setItem('theme', 'dark')
   } else {
@@ -24,8 +24,8 @@ const onThemeChange = () => {
 }
 
 onMounted(() => {
-  isDark.value = localStorage.getItem('theme') === 'dark'
-  if (isDark.value) {
+  isLight.value = localStorage.getItem('theme') !== 'dark'
+  if (!isLight.value) {
     document.documentElement.classList.add('dark')
   }
 })
@@ -91,7 +91,7 @@ const logout = () => {
             <input
                 type="checkbox"
                 class="circle"
-                v-model="isDark"
+                v-model="isLight"
                 @change="onThemeChange"
             />
             <svg
@@ -154,7 +154,7 @@ const logout = () => {
             <input
                 type="checkbox"
                 class="circle"
-                v-model="isDark"
+                v-model="isLight"
                 @change="onThemeChange"
             />
             <svg
