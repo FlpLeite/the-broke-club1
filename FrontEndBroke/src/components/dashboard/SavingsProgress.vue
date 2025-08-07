@@ -11,7 +11,7 @@ const props = defineProps<{
 }>()
 
 const savingsData = computed(() => {
-  const transactions = [...props.transactions].sort((a, b) => 
+  const transactions = [...props.transactions].sort((a, b) =>
     new Date(a.date).getTime() - new Date(b.date).getTime()
   )
 
@@ -21,7 +21,7 @@ const savingsData = computed(() => {
     return balance
   })
 
-  const labels = transactions.map(t => 
+  const labels = transactions.map(t =>
     new Date(t.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
   )
 
@@ -89,10 +89,10 @@ const chartOptions = {
 <template>
   <div class="card p-6">
     <div class="h-80">
-      <Line 
+      <Line
         v-if="transactions.length > 0"
-        :data="savingsData" 
-        :options="chartOptions" 
+        :data="savingsData"
+        :options="chartOptions"
       />
       <div v-else class="h-full flex items-center justify-center">
         <p class="text-gray-500">Nenhuma transação registrada</p>

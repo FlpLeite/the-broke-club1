@@ -4,7 +4,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
         <div>
           <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Assuma o Controle das Suas Finanças
+            ASSUMA O CONTROLE DAS SUAS FINANÇAS
           </h1>
           <p class="text-lg text-gray-600 mb-8">
             O The Broke Club ajuda você a acompanhar suas receitas e despesas, gerenciar seu orçamento e alcançar seus objetivos financeiros.
