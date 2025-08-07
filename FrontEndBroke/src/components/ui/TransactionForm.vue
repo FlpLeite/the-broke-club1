@@ -182,13 +182,13 @@ async function handleSubmit() {
         <button
           type="button"
           @click="emit('close')"
-          class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+          class="btn btn-secondary"
         >
           Cancelar
         </button>
         <button
           type="submit"
-          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          class="btn btn-primary"
         >
           {{ props.isEditing ? 'Atualizar' : 'Adicionar' }} Transação
         </button>

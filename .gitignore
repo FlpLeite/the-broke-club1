@@ -25,10 +25,10 @@ TheBrokeAPI/obj/
 *.launch.json
 
 # ===== Arquivos de ambiente =====
-.env
+FrontEndBroke/.env
 .env.*
 *.env.local
-./.env
+FrontEndBroke/.env
 
 # ===== Node.js / npm (caso seu projeto use frontend) =====
 node_modules/
