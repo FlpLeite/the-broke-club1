@@ -6,6 +6,7 @@ import { useTransactionsStore } from '../stores/transactions'
 import BalanceCard from '../components/dashboard/BalanceCard.vue'
 import ExpensesChart from '../components/dashboard/ExpensesChart.vue'
 import SavingsProgress from '../components/dashboard/SavingsProgress.vue'
+import IncomeExpenseChart from '../components/dashboard/IncomeExpenseChart.vue'
 import RecentTransactions from '../components/dashboard/RecentTransactions.vue'
 
 const router = useRouter()
@@ -97,7 +98,11 @@ onMounted(async() => {
       <ExpensesChart :transactions="filteredTransactions" />
       <SavingsProgress :transactions="filteredTransactions" />
     </div>
-    
+
+    <div class="grid grid-cols-1 gap-6 mb-6">
+      <IncomeExpenseChart :transactions="filteredTransactions" />
+    </div>
+
     <div class="grid grid-cols-1 gap-6">
       <RecentTransactions :transactions="filteredTransactions" />
     </div>
