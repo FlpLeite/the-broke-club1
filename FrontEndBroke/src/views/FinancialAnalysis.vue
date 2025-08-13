@@ -7,16 +7,16 @@
 
     <div class="tabs">
       <button
-        @click="activeTab = 'analysis'"
-        :class="{ active: activeTab === 'analysis' }"
-        class="tab-button"
+          @click="activeTab = 'analysis'"
+          :class="{ active: activeTab === 'analysis' }"
+          class="tab-button"
       >
         <i class="fas fa-chart-pie"></i> Análise Automática
       </button>
       <button
-        @click="activeTab = 'chat'"
-        :class="{ active: activeTab === 'chat' }"
-        class="tab-button"
+          @click="activeTab = 'chat'"
+          :class="{ active: activeTab === 'chat' }"
+          class="tab-button"
       >
         <i class="fas fa-comments"></i> Chat com a Penny
       </button>
@@ -26,9 +26,9 @@
       <!-- Conteúdo existente da análise -->
       <div class="analysis-controls">
         <button
-          @click="analyzeFinances"
-          :disabled="isLoading || !hasTransactions"
-          class="analyze-button"
+            @click="analyzeFinances"
+            :disabled="isLoading || !hasTransactions"
+            class="analyze-button"
         >
           <span v-if="!isLoading">
             <i class="fas fa-magic"></i> Gerar Análise
@@ -51,22 +51,22 @@
         <div class="advice-content" v-html="formattedAdvice"></div>
       </div>
 
-<div v-else-if="!isLoading" class="empty-state">
-  <div class="empty-image-container">
-    <img src="../assets/Penny.png" alt="Penny - Assistente Financeira" class="empty-image">
-    </div>
-    <strong><h1 class="Apresentacao">Ola me chamo Penny sou IA Assistente da The Broke club</h1></strong>
-    <p>estou aqui para auxilia-lo com suas duvidas e ajudar a organizar sua situação financeira</p>
-    </div>
+      <div v-else-if="!isLoading" class="empty-state">
+        <div class="empty-image-container">
+          <img src="../assets/Penny.png" alt="Penny - Assistente Financeira" class="empty-image">
+        </div>
+        <strong><h1 class="Apresentacao">Ola me chamo Penny sou IA Assistente da The Broke club</h1></strong>
+        <p>estou aqui para auxilia-lo com suas duvidas e ajudar a organizar sua situação financeira</p>
+      </div>
     </div>
 
     <div v-if="activeTab === 'chat'" class="content-card chat-container">
       <div class="chat-messages" ref="chatContainer">
         <div
-          v-for="(message, index) in chatMessages"
-          :key="index"
-          :class="['message', message.role]"
-          >
+            v-for="(message, index) in chatMessages"
+            :key="index"
+            :class="['message', message.role]"
+        >
           <div class="message-header">
             <img
                 :src="message.role === 'user' ? userAvatar : pennyAvatar"
@@ -93,16 +93,16 @@
         <form @submit.prevent="sendMessage">
           <div class="input-group">
             <input
-              v-model="userMessage"
-              type="text"
-              placeholder="Pergunte algo sobre suas finanças..."
-              :disabled="isChatLoading || !hasTransactions"
-              class="chat-input"
+                v-model="userMessage"
+                type="text"
+                placeholder="Pergunte algo sobre suas finanças..."
+                :disabled="isChatLoading || !hasTransactions"
+                class="chat-input"
             />
             <button
-              type="submit"
-              :disabled="!userMessage || isChatLoading || !hasTransactions"
-              class="send-button"
+                type="submit"
+                :disabled="!userMessage || isChatLoading || !hasTransactions"
+                class="send-button"
             >
               <i class="fas fa-paper-plane"></i>
             </button>
@@ -116,10 +116,10 @@
         <div class="suggestions">
           <p>Tente perguntar:</p>
           <button
-            v-for="(suggestion, index) in suggestedQuestions"
-            :key="index"
-            @click="userMessage = suggestion; sendMessage()"
-            class="suggestion-button"
+              v-for="(suggestion, index) in suggestedQuestions"
+              :key="index"
+              @click="userMessage = suggestion; sendMessage()"
+              class="suggestion-button"
           >
             {{ suggestion }}
           </button>
@@ -135,9 +135,8 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { useTransactionsStore } from '../stores/transactions';
 import { geminiService } from '../services/iaService';
-import pennyAvatar from '../assets/Penny.png'
-import userAvatar from '../assets/user.svg'
-
+import pennyAvatar from '../assets/Penny.png';
+import userAvatar from '../assets/user.svg';
 
 const authStore = useAuthStore();
 const transactionsStore = useTransactionsStore();
@@ -147,7 +146,7 @@ const router = useRouter();
 const isLoading = ref(false);
 const error = ref('');
 const advice = ref('');
-const activeTab = ref('analysis');
+const activeTab = ref<'analysis' | 'chat'>('analysis');
 
 // Variáveis para o chat
 const chatMessages = ref<Array<{
@@ -160,16 +159,16 @@ const isChatLoading = ref(false);
 const chatContainer = ref<HTMLElement | null>(null);
 
 const suggestedQuestions = [
-  "Quais são meus maiores gastos este mês?",
-  "Como posso economizar mais dinheiro?",
-  "Estou gastando muito com alimentação?",
-  "Quais categorias posso reduzir meus gastos?",
-  "Como está meu saldo atual?"
+  'Quais são meus maiores gastos este mês?',
+  'Como posso economizar mais dinheiro?',
+  'Estou gastando muito com alimentação?',
+  'Quais categorias posso reduzir meus gastos?',
+  'Como está meu saldo atual?'
 ];
 
 const hasTransactions = computed(() => {
   return transactionsStore.transactions.length > 0 &&
-         !transactionsStore.transactions.some(t => isNaN(t.amount));
+      !transactionsStore.transactions.some(t => isNaN(t.amount));
 });
 
 const loadData = async () => {
@@ -205,21 +204,19 @@ const analyzeFinances = async () => {
 
   try {
     const loaded = await loadData();
-
     if (!loaded || !hasTransactions.value) {
       error.value = 'Dados insuficientes para análise. Adicione transações válidas.';
       return;
     }
 
     const timeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Tempo excedido na análise')), 30000)
+        setTimeout(() => reject(new Error('Tempo excedido na análise')), 30000)
     );
 
     advice.value = await Promise.race([
       geminiService.getFinancialAdvice(transactionsStore.transactions),
       timeout
     ]);
-
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Erro desconhecido';
     console.error('Erro na análise:', err);
@@ -257,7 +254,6 @@ const sendMessage = async () => {
       content: response,
       timestamp: new Date()
     });
-
   } catch (err) {
     console.error('Erro no chat:', err);
     chatMessages.value.push({
@@ -271,12 +267,102 @@ const sendMessage = async () => {
   }
 };
 
-const formatMessage = (content: string) => {
-  return content
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\n/g, '<br>')
-    .replace(/- (.*?)(<br>|$)/g, '<li>$1</li>');
+/* ===== Renderizador de Markdown (sem libs) ===== */
+const escapeHtml = (str: string) =>
+    str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+const renderMarkdown = (md: string) => {
+  if (!md) return '';
+
+  // 1) Preserva blocos de código ```...```
+  const codeBlocks: string[] = [];
+  md = md.replace(/```([\s\S]*?)```/g, (_, code) => {
+    const i = codeBlocks.push(`<pre><code>${escapeHtml(code.trim())}</code></pre>`) - 1;
+    return `@@CODEBLOCK_${i}@@`;
+  });
+
+  // 2) Escapa HTML restante
+  md = escapeHtml(md);
+
+  // 3) Inline code `code`
+  md = md.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+  // 4) Títulos
+  md = md
+      .replace(/^###### (.*)$/gm, '<h6>$1</h6>')
+      .replace(/^##### (.*)$/gm, '<h5>$1</h5>')
+      .replace(/^#### (.*)$/gm, '<h4>$1</h4>')
+      .replace(/^### (.*)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.*)$/gm, '<h2>$1</h2>')
+      .replace(/^# (.*)$/gm, '<h1>$1</h1>');
+
+  // 5) Negrito e itálico
+  md = md
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/__(.+?)__/g, '<strong>$1</strong>')
+      .replace(/_(.+?)_/g, '<em>$1</em>');
+
+  // 6) Links [texto](url)
+  md = md.replace(
+      /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+      `<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>`
+  );
+
+  // 7) Listas (ul/ol) por linhas
+  const lines = md.split(/\r?\n/);
+  let html = '';
+  let inUl = false;
+  let inOl = false;
+
+  const closeLists = () => {
+    if (inUl) { html += '</ul>'; inUl = false; }
+    if (inOl) { html += '</ol>'; inOl = false; }
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+
+    if (/^- (.+)/.test(line)) {
+      if (!inUl) { closeLists(); html += '<ul>'; inUl = true; }
+      html += `<li>${line.replace(/^- (.+)/, '$1')}</li>`;
+      continue;
+    }
+    if (/^\d+\. (.+)/.test(line)) {
+      if (!inOl) { closeLists(); html += '<ol>'; inOl = true; }
+      html += `<li>${line.replace(/^\d+\. (.+)/, '$1')}</li>`;
+      continue;
+    }
+
+    if (line === '') { // linha vazia fecha listas
+      closeLists();
+      continue;
+    }
+
+    // Parágrafo comum (se não for heading/codeblock)
+    if (!/^<h\d>/.test(line) && !/^@@CODEBLOCK_\d+@@$/.test(line)) {
+      closeLists();
+      html += `<p>${line}</p>`;
+    } else {
+      closeLists();
+      html += rawLine; // já é HTML pronto
+    }
+  }
+  closeLists();
+
+  // 8) Recoloca os codeblocks
+  html = html.replace(/@@CODEBLOCK_(\d+)@@/g, (_, i) => codeBlocks[Number(i)]);
+
+  return html;
 };
+
+// Usa o renderizador no chat e no advice
+const formatMessage = (content: string) => renderMarkdown(content);
+const formattedAdvice = computed(() => renderMarkdown(advice.value || ''));
+/* ===== Fim do renderizador ===== */
 
 const formatTime = (date: Date) => {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -289,13 +375,6 @@ const scrollToBottom = () => {
     }
   });
 };
-
-const formattedAdvice = computed(() => {
-  if (!advice.value) return '';
-  return advice.value
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\n/g, '<br>');
-});
 
 onMounted(async () => {
   if (!authStore.isAuthenticated) {
@@ -322,7 +401,6 @@ onMounted(async () => {
   text-align: center;
   margin-bottom: 2rem;
 }
-
 
 .Apresentacao{
   font-size: 140%;
@@ -444,6 +522,114 @@ onMounted(async () => {
 .message-content {
   line-height: 1.5;
 }
+
+/* ===== Ajustes de Markdown ===== */
+
+/* Negrito deve herdar a cor do tema, não ficar fixo escuro */
+.advice-content :deep(strong),
+.message-content :deep(strong) {
+  color: inherit;
+  font-weight: 700;
+}
+
+/* Títulos renderizados a partir de # ## ### */
+.message-content :deep(h1),
+.message-content :deep(h2),
+.message-content :deep(h3),
+.advice-content :deep(h1),
+.advice-content :deep(h2),
+.advice-content :deep(h3) {
+  margin: 0.75rem 0 0.5rem;
+  line-height: 1.2;
+}
+
+.message-content :deep(h1),
+.advice-content :deep(h1) { font-size: 1.4rem; }
+
+.message-content :deep(h2),
+.advice-content :deep(h2) { font-size: 1.2rem; }
+
+.message-content :deep(h3),
+.advice-content :deep(h3) { font-size: 1.05rem; }
+
+/* Cores dos títulos no dark */
+.dark .message-content :deep(h1),
+.dark .message-content :deep(h2),
+.dark .message-content :deep(h3),
+.dark .advice-content :deep(h1),
+.dark .advice-content :deep(h2),
+.dark .advice-content :deep(h3) {
+  color: #F3F7FA;
+}
+
+/* Links seguros e visíveis */
+.message-content :deep(a),
+.advice-content :deep(a) {
+  text-decoration: underline;
+  word-break: break-word;
+}
+
+/* Parágrafos e quebra de linha */
+.advice-content :deep(br),
+.message-content :deep(br) {
+  content: "";
+  display: block;
+  margin-bottom: 0.8rem;
+}
+
+/* Listas */
+.advice-content :deep(ul),
+.message-content :deep(ul),
+.advice-content :deep(ol),
+.message-content :deep(ol) {
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.advice-content :deep(li),
+.message-content :deep(li) {
+  margin-bottom: 0.5rem;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.advice-content :deep(ul) :deep(li)::before,
+.message-content :deep(ul) :deep(li)::before {
+  content: "•";
+  color: #4CAF50;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+/* Blocos e inline-code */
+.message-content :deep(pre),
+.advice-content :deep(pre) {
+  background: rgba(0,0,0,0.05);
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.dark .message-content :deep(pre),
+.dark .advice-content :deep(pre) {
+  background: rgba(255,255,255,0.07);
+}
+
+.message-content :deep(code),
+.advice-content :deep(code) {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.06);
+}
+
+.dark .message-content :deep(code),
+.dark .advice-content :deep(code) {
+  background: rgba(255,255,255,0.12);
+}
+
+/* ===== Fim ajustes Markdown ===== */
 
 .chat-input-container {
   margin-top: auto;
@@ -644,46 +830,5 @@ onMounted(async () => {
   text-align: left;
   display: inline-block;
   margin-top: 0rem;
-}
-
-.advice-content :deep(strong),
-.message-content :deep(strong) {
-  color: #2c3e50;
-}
-
-.advice-content :deep(h3),
-.message-content :deep(h3) {
-  color: #4CAF50;
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.advice-content :deep(br),
-.message-content :deep(br) {
-  content: "";
-  display: block;
-  margin-bottom: 0.8rem;
-}
-
-.advice-content :deep(ul),
-.message-content :deep(ul) {
-  padding-left: 1.5rem;
-  margin: 1rem 0;
-}
-
-.advice-content :deep(li),
-.message-content :deep(li) {
-  margin-bottom: 0.5rem;
-  position: relative;
-  padding-left: 1.5rem;
-}
-
-.advice-content :deep(li):before,
-.message-content :deep(li):before {
-  content: "•";
-  color: #4CAF50;
-  font-weight: bold;
-  position: absolute;
-  left: 0;
 }
 </style>
