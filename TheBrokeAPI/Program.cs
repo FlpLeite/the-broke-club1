@@ -1,33 +1,31 @@
-using Microsoft.EntityFrameworkCore;
-using TheBrokeClub.API.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using TheBrokeClub.API.Data;
+using TheBrokeClub.API.Infrastructure.Quotes;
+using TheBrokeClub.API.Options;              
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Banco de Dados
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:5173")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
 
-// 3. Controllers e Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 4. Configuração do JWT
+// 4) JWT
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "uma_chave_muito_segura_para_dev";
 builder.Services.AddAuthentication(options =>
 {
@@ -44,6 +42,17 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
+});
+
+builder.Services.Configure<AlphaVantageOptions>(
+    builder.Configuration.GetSection("AlphaVantage"));
+
+builder.Services.AddScoped<IQuoteCache, DbQuoteCache>();
+builder.Services.AddScoped<IQuoteLimiter, DbQuoteLimiter>();
+
+builder.Services.AddHttpClient<IQuoteProvider, AlphaVantageQuoteProvider>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(10);
 });
 
 var app = builder.Build();

@@ -12,6 +12,9 @@
 *.suo
 *.sourcelink.json
 apphost.exe
+appsettings.json
+appsettings.*.json
+!appsettings.Development.json
 
 ## Arquivos gerados em tempo de compilação
 TheBrokeAPI/bin/
