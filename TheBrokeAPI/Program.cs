@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -13,14 +13,24 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IInvestimentosService, InvestimentosService>();
+builder.Services.Configure<AlphaVantageOptions>(builder.Configuration.GetSection("AlphaVantage"));
+builder.Services.AddScoped<IQuoteCache, DbQuoteCache>();
+builder.Services.AddScoped<IQuoteLimiter, DbQuoteLimiter>();
+builder.Services.AddHttpClient<IQuoteProvider, AlphaVantageQuoteProvider>(c => c.Timeout = TimeSpan.FromSeconds(10));
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy
+            .WithOrigins(
+                "http://localhost:5173",
+                "http://127.0.0.1:5173",
+                "https://localhost:5173",
+                "https://127.0.0.1:5173"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 
@@ -28,7 +38,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 4) JWT
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "uma_chave_muito_segura_para_dev";
 builder.Services.AddAuthentication(options =>
 {
@@ -47,17 +56,6 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.Configure<AlphaVantageOptions>(
-    builder.Configuration.GetSection("AlphaVantage"));
-
-builder.Services.AddScoped<IQuoteCache, DbQuoteCache>();
-builder.Services.AddScoped<IQuoteLimiter, DbQuoteLimiter>();
-
-builder.Services.AddHttpClient<IQuoteProvider, AlphaVantageQuoteProvider>(client =>
-{
-    client.Timeout = TimeSpan.FromSeconds(10);
-});
-
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -68,8 +66,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseRouting();
 app.UseCors("AllowFrontend");
-
 app.UseAuthentication();
 app.UseAuthorization();
 
