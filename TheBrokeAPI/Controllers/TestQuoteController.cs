@@ -14,13 +14,25 @@ namespace TheBrokeClub.API.Controllers
             _quoteProvider = quoteProvider;
         }
 
-        // GET api/testquote/PETR4.SAO
         [HttpGet("{ticker}")]
         public async Task<IActionResult> GetQuote(string ticker, CancellationToken ct)
         {
-            // Simulando ativo de ID fixo = 1 só para teste
             var result = await _quoteProvider.GetQuoteAsync(1, ticker, ct);
             return Ok(result);
+        }
+
+        [HttpGet("{ativoId:int}/{ticker}")]
+        public async Task<IActionResult> GetQuote(int ativoId, string ticker, CancellationToken ct)
+        {
+            var (price, asof, fromCache, isStale) = await _quoteProvider.GetQuoteAsync(ativoId, ticker, ct);
+
+            return Ok(new
+            {
+                price,
+                asof,
+                fromCache,
+                isStale
+            });
         }
     }
 }
