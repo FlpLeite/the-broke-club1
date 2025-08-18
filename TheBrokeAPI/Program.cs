@@ -4,12 +4,15 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TheBrokeClub.API.Data;
 using TheBrokeClub.API.Infrastructure.Quotes;
-using TheBrokeClub.API.Options;              
+using TheBrokeClub.API.Options;
+using TheBrokeClub.API.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IInvestimentosService, InvestimentosService>();
 
 builder.Services.AddCors(options =>
 {

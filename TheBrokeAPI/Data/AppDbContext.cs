@@ -13,6 +13,8 @@ public class AppDbContext : DbContext
 
     public DbSet<InvestimentoPrecoCache> InvestimentoPrecoCache { get; set; }
     public DbSet<QuoteDailyUsage> QuoteDailyUsage { get; set; }
+    public DbSet<InvestimentoAtivo> InvestimentoAtivo { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -27,14 +29,6 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Metas>()
             .ToTable("metas")
             .HasKey(m => m.IdObjetivo);
-
-        modelBuilder.Entity<InvestimentoPrecoCache>()
-            .ToTable("investimento_preco_cache")
-            .HasKey(x => x.Id);
-
-        modelBuilder.Entity<QuoteDailyUsage>()
-            .ToTable("quote_daily_usage")
-            .HasKey(x => x.Day);
 
         modelBuilder.Entity<InvestimentoPrecoCache>(e =>
         {
@@ -56,5 +50,22 @@ public class AppDbContext : DbContext
             e.Property(x => x.Used).HasColumnName("used");
         });
 
+        modelBuilder.Entity<Transacao>()
+            .Property(t => t.InvestimentoAtivoId)
+            .HasColumnName("investimento_ativo_id");
+
+        modelBuilder.Entity<InvestimentoAtivo>(e =>
+        {
+            e.ToTable("investimento_ativo");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).HasColumnName("id");
+            e.Property(x => x.UsuarioId).HasColumnName("usuario_id");
+            e.Property(x => x.Ticker).HasColumnName("ticker");
+            e.Property(x => x.Nome).HasColumnName("nome");
+            e.Property(x => x.CreatedAt).HasColumnName("created_at");
+        });
+
+        modelBuilder.Entity<Transacao>().Property(t => t.Quantidade).HasColumnName("quantidade");
+        modelBuilder.Entity<Transacao>().Property(t => t.PrecoUnit).HasColumnName("preco_unit");
     }
 }
