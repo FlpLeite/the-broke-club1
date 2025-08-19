@@ -37,8 +37,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { useInvestmentsStore } from '@/stores/investments';
-import InvestmentCard from '@/components/InvestmentCard.vue';
+import { useInvestmentsStore } from '../stores/investments';
+import InvestmentCard from '../components/InvestmentCard.vue';
 
 // ajuste: pegue usuarioId do auth store/jwt. Temporário fixo:
 const usuarioId = 1;

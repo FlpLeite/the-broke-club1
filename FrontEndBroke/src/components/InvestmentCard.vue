@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import type { InvestCard } from '../api/investments';
-const props = defineProps<{ card: InvestCard }>();
+defineProps<{ card: InvestCard }>();
 
 const n = (v: number) => new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 4 }).format(v);
 const money = (v: number) => new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
