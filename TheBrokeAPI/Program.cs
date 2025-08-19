@@ -9,14 +9,30 @@ using TheBrokeClub.API.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// DB
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// App Services
 builder.Services.AddScoped<IInvestimentosService, InvestimentosService>();
+
+// AlphaVantage provider + limiter (para o worker usar)
 builder.Services.Configure<AlphaVantageOptions>(builder.Configuration.GetSection("AlphaVantage"));
 builder.Services.AddScoped<IQuoteCache, DbQuoteCache>();
 builder.Services.AddScoped<IQuoteLimiter, DbQuoteLimiter>();
-builder.Services.AddHttpClient<IQuoteProvider, AlphaVantageQuoteProvider>(c => c.Timeout = TimeSpan.FromSeconds(10));
+builder.Services.AddHttpClient<IQuoteProvider, AlphaVantageQuoteProvider>(c =>
+{
+    c.Timeout = TimeSpan.FromSeconds(10);
+});
+
+// Cache por ticker + discovery + worker
+builder.Services.AddScoped<ITickerPriceCache, DbTickerPriceCache>();
+builder.Services.AddScoped<ITrackedTickers, DbTrackedTickers>();
+builder.Services.Configure<B3ScheduleOptions>(builder.Configuration.GetSection("B3Schedule"));
+builder.Services.AddHostedService<QuoteIngestionWorker>();
+
+// Infra
+builder.Services.AddMemoryCache();
 
 builder.Services.AddCors(options =>
 {
@@ -38,6 +54,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// JWT
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "uma_chave_muito_segura_para_dev";
 builder.Services.AddAuthentication(options =>
 {
@@ -65,12 +82,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseRouting();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.Run();

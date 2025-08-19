@@ -37,7 +37,7 @@
         </div>
       </div>
       <div class="text-xs opacity-60 col-span-2">
-        {{ card.isQuoteStale ? 'Cotação do cache (limite diário)' : 'Cotação atual' }}
+        {{'Cotação atual' }}
       </div>
     </div>
   </div>

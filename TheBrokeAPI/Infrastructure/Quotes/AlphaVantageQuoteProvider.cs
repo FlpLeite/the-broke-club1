@@ -28,18 +28,22 @@ namespace TheBrokeClub.API.Infrastructure.Quotes
             _opt = opt.Value;
         }
 
+
         public async Task<(decimal price, DateTime asof, bool fromCache, bool isStale)>
-            GetQuoteAsync(int ativoId, string ticker, CancellationToken ct)
+        GetQuoteAsync(int ativoId, string ticker, CancellationToken ct)
         {
             var ttl = TimeSpan.FromMinutes(_opt.CacheTtlMinutes);
+
             var cached = await _cache.TryGetRecentAsync(ativoId, ttl, ct);
-            if (cached is not null) return (cached.Value.price, cached.Value.asof, true, false);
+            if (cached is not null)
+                return (cached.Value.price, cached.Value.asof, true, false);
 
             if (!await _limiter.TryConsumeAsync(1, ct))
             {
-                var stale = await _cache.TryGetRecentAsync(ativoId, TimeSpan.FromDays(3650), ct);
+                var stale = await _cache.TryGetRecentAsync(ativoId, TimeSpan.FromDays(30), ct);
                 if (stale is not null) return (stale.Value.price, stale.Value.asof, true, true);
-                throw new InvalidOperationException("Limite diário atingido e não há cache disponível.");
+
+                return (0m, DateTime.UtcNow, false, true);
             }
 
             var url = $"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={Uri.EscapeDataString(ticker)}&apikey={_opt.ApiKey}";
@@ -51,19 +55,41 @@ namespace TheBrokeClub.API.Infrastructure.Quotes
             using var doc = System.Text.Json.JsonDocument.Parse(json);
             var root = doc.RootElement;
 
-            if (!root.TryGetProperty("Global Quote", out var quote))
-                throw new InvalidOperationException("Resposta da Alpha Vantage não contém 'Global Quote'.");
+            if (root.TryGetProperty("Note", out _) || root.TryGetProperty("Information", out _))
+            {
+                var stale = await _cache.TryGetRecentAsync(ativoId, TimeSpan.FromDays(30), ct);
+                if (stale is not null) return (stale.Value.price, stale.Value.asof, true, true);
+                return (0m, DateTime.UtcNow, false, true);
+            }
+
+            if (!root.TryGetProperty("Global Quote", out var quote) || quote.ValueKind != System.Text.Json.JsonValueKind.Object)
+            {
+                var stale = await _cache.TryGetRecentAsync(ativoId, TimeSpan.FromDays(30), ct);
+                if (stale is not null) return (stale.Value.price, stale.Value.asof, true, true);
+                return (0m, DateTime.UtcNow, false, true);
+            }
 
             if (!quote.TryGetProperty("05. price", out var priceEl))
-                throw new InvalidOperationException("Resposta da Alpha Vantage sem '05. price'.");
+            {
+                var stale = await _cache.TryGetRecentAsync(ativoId, TimeSpan.FromDays(30), ct);
+                if (stale is not null) return (stale.Value.price, stale.Value.asof, true, true);
+                return (0m, DateTime.UtcNow, false, true);
+            }
 
             var priceStr = priceEl.GetString();
             if (!decimal.TryParse(priceStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var price))
-                throw new InvalidOperationException("Preço inválido retornado pela Alpha Vantage.");
+            {
+                var stale = await _cache.TryGetRecentAsync(ativoId, TimeSpan.FromDays(30), ct);
+                if (stale is not null) return (stale.Value.price, stale.Value.asof, true, true);
+                return (0m, DateTime.UtcNow, false, true);
+            }
 
             var asof = DateTime.UtcNow;
+
             await _cache.SaveAsync(ativoId, price, asof, Name, ct);
+
             return (price, asof, false, false);
         }
+
     }
 }

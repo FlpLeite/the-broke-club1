@@ -35,3 +35,16 @@ export async function listAtivos(usuarioId: number) {
     const cards = await fetchInvestmentCards(usuarioId);
     return cards.map(c => ({ id: c.ativoId, nome: c.nome, ticker: c.ticker }));
 }
+
+export type SymbolItem = {
+    symbol: string;
+    name: string;
+    region?: string;
+    currency?: string;
+};
+
+export async function searchSymbols(q: string) {
+    if (!q || q.length < 3) return [] as SymbolItem[];
+    const { data } = await api.get<SymbolItem[]>('/symbols/search', { params: { q } });
+    return data;
+}

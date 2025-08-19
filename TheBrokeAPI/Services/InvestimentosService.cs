@@ -20,12 +20,12 @@ public interface IInvestimentosService
 public class InvestimentosService : IInvestimentosService
 {
     private readonly AppDbContext _db;
-    private readonly IQuoteProvider _quotes;
+    private readonly ITickerPriceCache _tickerCache;
 
-    public InvestimentosService(AppDbContext db, IQuoteProvider quotes)
+    public InvestimentosService(AppDbContext db, ITickerPriceCache tickerCache)
     {
         _db = db;
-        _quotes = quotes;
+        _tickerCache = tickerCache;
     }
 
     public async Task<IReadOnlyList<InvestimentoResumoDto>> GetCardsAsync(int usuarioId, CancellationToken ct)
@@ -39,7 +39,6 @@ public class InvestimentosService : IInvestimentosService
 
         foreach (var a in ativos)
         {
-            // ⚠️ use IdUsuario (seu model), não UsuarioIdUsuario
             var txs = await _db.Transacoes
                 .Where(t => t.IdUsuario == usuarioId && t.InvestimentoAtivoId == a.Id)
                 .AsNoTracking()
@@ -50,20 +49,18 @@ public class InvestimentosService : IInvestimentosService
 
             foreach (var t in txs)
             {
-                // força string e normaliza
                 var cat = (t.Categoria ?? string.Empty).ToLowerInvariant();
-
-                // heurística simples (ajuste pra seus valores reais)
                 var isCompra = cat.Contains("compra") || cat.Contains("buy");
                 var isVenda = cat.Contains("venda") || cat.Contains("sell");
                 var isDiv = cat.Contains("divid"); // dividendo
 
-                // Se você adicionou Quantidade/PrecoUnit, usa; senão tenta deduzir
-                var q = t.Quantidade > 0 ? t.Quantidade
-                      : (t.PrecoUnit > 0 ? (t.Valor / t.PrecoUnit) : 0);
+                // valores crus, tratando null como 0
+                var qRaw = t.Quantidade ?? 0m;
+                var puRaw = t.PrecoUnit ?? 0m;
 
-                var pu = t.PrecoUnit > 0 ? t.PrecoUnit
-                     : (q > 0 ? (t.Valor / q) : 0);
+                // deduz quantidade/preço unitário quando não vierem preenchidos
+                var q = qRaw > 0 ? qRaw : (puRaw > 0 ? (t.Valor / puRaw) : 0m);
+                var pu = puRaw > 0 ? puRaw : (q > 0 ? (t.Valor / q) : 0m);
 
                 if (isCompra)
                 {
@@ -88,7 +85,12 @@ public class InvestimentosService : IInvestimentosService
             var pmFinal = somaQtdCompra > 0 ? (somaPrecoQtd / somaQtdCompra) : 0m;
             var totalInvestido = totalCompras - totalVendas;
 
-            var (precoAtual, _, _, isStale) = await _quotes.GetQuoteAsync(a.Id, a.Ticker, ct);
+            // Lê preço do cache central por ticker (atualizado pelo worker)
+            var priceInfo = await _tickerCache.TryGetAsync(a.Ticker, ct);
+            decimal precoAtual = priceInfo?.price ?? 0m;
+
+            // considere "stale" se > 24h sem atualização
+            bool isStale = priceInfo is null || (DateTime.UtcNow - priceInfo.Value.asof) > TimeSpan.FromHours(24);
 
             var valorAtual = precoAtual * qtd;
             var ganhoNaoRealizado = (precoAtual - pmFinal) * qtd;

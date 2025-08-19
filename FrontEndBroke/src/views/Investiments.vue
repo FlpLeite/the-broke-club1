@@ -4,6 +4,7 @@ import { useTransactionsStore } from '../stores/transactions'
 import { useInvestmentsStore } from '../stores/investments'
 import { useAuthStore } from '../stores/auth'
 import InvestmentCard from '../components/InvestmentCard.vue'
+import TickerSearch from '../components/TickerSearch.vue';
 
 const transactionsStore = useTransactionsStore()
 const investmentsStore = useInvestmentsStore()
@@ -24,6 +25,10 @@ onMounted(async () => {
 })
 
 watch(open, v => v && dlg.value?.showModal())
+
+function onSymbolSelected(item: { symbol: string; name: string }) {
+  if (!nome.value) nome.value = item.name ?? '';
+}
 
 async function submit() {
   if (authStore.user) {
@@ -140,8 +145,12 @@ const resetFilters = () => {
         <form class="p-4 space-y-3" @submit.prevent="submit">
           <h2 class="text-lg font-medium">Novo ativo</h2>
           <div class="space-y-1">
-            <label class="text-sm">Ticker (ex: PETR4.SA)</label>
-            <input v-model="ticker" class="w-full rounded-xl border px-3 py-2 bg-white/5" required />
+            <TickerSearch
+            v-model="ticker"
+            label="Ticker (ex: PETR4.SA)"
+            placeholder="Digite 3+ letras (ex.: PETR)"
+            @select="onSymbolSelected"
+            />
           </div>
           <div class="space-y-1">
             <label class="text-sm">Nome</label>
