@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref, defineEmits, defineProps } from 'vue'
+import { ref, defineEmits, defineProps, watch, onMounted } from 'vue'
 import { useTransactionsStore, Transaction } from '../../stores/transactions'
 import { useAuthStore } from '../../stores/auth'
 import { useRouter } from 'vue-router'
+import { useInvestmentsStore } from '../../stores/investments'
 
 const authStore         = useAuthStore()
 const transactionsStore = useTransactionsStore()
+const investmentsStore  = useInvestmentsStore()
 const router            = useRouter()
 
 const props = defineProps<{
@@ -76,6 +78,19 @@ async function handleSubmit() {
 
   emit('close')
 }
+
+onMounted(async () => {
+  if (authStore.user) {
+    await investmentsStore.refreshAtivos(authStore.user.idUsuario)
+  }
+})
+
+watch(type, async (v) => {
+  if (v === 'investment' && authStore.user) {
+    await investmentsStore.refreshAtivos(authStore.user.idUsuario)
+    description.value = ''
+  }
+})
 </script>
 
 <template>
@@ -133,6 +148,29 @@ async function handleSubmit() {
       <!-- Descrição -->
       <div class="mb-4">
         <label for="description" class="block mb-1 font-medium text-gray-700">Descrição</label>
+        <template v-if="type === 'investment'">
+          <select
+              id="description"
+              v-model="description"
+              class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              :class="{ 'border-red-500': errors.description }"
+          >
+            <option value="">Selecione um investimento</option>
+            <option v-for="ativo in investmentsStore.ativosLite" :key="ativo.id" :value="ativo.nome">
+              {{ ativo.nome }}
+            </option>
+          </select>
+        </template>
+        <template v-else>
+          <input
+              id="description"
+              v-model="description"
+              type="text"
+              class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              :class="{ 'border-red-500': errors.description }"
+              placeholder="ex: Salário, Aluguel, Supermercado"
+          />
+        </template>
         <input
           id="description"
           v-model="description"

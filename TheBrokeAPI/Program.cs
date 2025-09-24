@@ -1,33 +1,60 @@
+ï»¿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using TheBrokeClub.API.Data;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using TheBrokeClub.API.Data;
+using TheBrokeClub.API.Infrastructure.Quotes;
+using TheBrokeClub.API.Options;
+using TheBrokeClub.API.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Banco de Dados
+// DB
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. CORS
-builder.Services.AddCors(options =>
+// App Services
+builder.Services.AddScoped<IInvestimentosService, InvestimentosService>();
+
+// AlphaVantage provider + limiter (para o worker usar)
+builder.Services.Configure<AlphaVantageOptions>(builder.Configuration.GetSection("AlphaVantage"));
+builder.Services.AddScoped<IQuoteCache, DbQuoteCache>();
+builder.Services.AddScoped<IQuoteLimiter, DbQuoteLimiter>();
+builder.Services.AddHttpClient<IQuoteProvider, AlphaVantageQuoteProvider>(c =>
 {
-    options.AddPolicy("AllowFrontend",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:5173")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
+    c.Timeout = TimeSpan.FromSeconds(10);
 });
 
-// 3. Controllers e Swagger
+// Cache por ticker + discovery + worker
+builder.Services.AddScoped<ITickerPriceCache, DbTickerPriceCache>();
+builder.Services.AddScoped<ITrackedTickers, DbTrackedTickers>();
+builder.Services.Configure<B3ScheduleOptions>(builder.Configuration.GetSection("B3Schedule"));
+builder.Services.AddHostedService<QuoteIngestionWorker>();
+
+// Infra
+builder.Services.AddMemoryCache();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:5173",
+                "http://127.0.0.1:5173",
+                "https://localhost:5173",
+                "https://127.0.0.1:5173"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 4. Configuração do JWT
+// JWT
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "uma_chave_muito_segura_para_dev";
 builder.Services.AddAuthentication(options =>
 {
@@ -55,12 +82,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseRouting();
 app.UseCors("AllowFrontend");
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.Run();

@@ -31,25 +31,36 @@ const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: Dashboard,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/transactions',
       name: 'transactions',
       component: Transactions,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        title: 'Transações'
+      }
     },
     {
       path: '/investiments',
       name: 'investiments',
       component: Investiments,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        title: 'Investimentos'
+      }
     },
     {
       path: '/goals',
       name: 'goals',
       component: Goals,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        title: 'Metas'
+      }
     },
     {
       path: '/financial-analysis',
@@ -74,8 +85,8 @@ router.beforeEach((to, _from, next) => {
 })
 
 router.afterEach((to) => {
-  const title = to.meta.title || 'Meu App Financeiro'
-  document.title = `${title} | Meu App`
+  const title = to.meta.title || 'The broke club'
+  document.title = `${title}`
 })
 
 export default router
