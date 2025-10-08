@@ -1,88 +1,56 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useTransactionsStore } from '../stores/transactions'
-import { Pie } from 'vue-chartjs'
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from 'chart.js'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
+import { useInvestmentsStore, Investment } from '../stores/investiments.ts'
+import InvestmentForm from '../components/ui/InvestmentForm.vue'
+import InvestmentSummary from '../components/investments/InvestmentSummary.vue'
+import InvestmentChart from '../components/investments/InvestmentChart.vue'
 
-ChartJS.register(ArcElement, Tooltip, Legend, Title)
+const router = useRouter()
+const authStore = useAuthStore()
+const investmentsStore = useInvestmentsStore()
 
-const transactionsStore = useTransactionsStore()
-const dateFrom = ref('')
-const dateTo = ref('')
+const showForm = ref(false)
+const isEditing = ref(false)
+const currentInvestment = ref<Investment | undefined>(undefined)
+const searchQuery = ref('')
+const selectedType = ref('')
 
-const filteredTransactions = computed(() => {
-  return transactionsStore.transactions.filter(transaction => {
-    const isInvestment = transaction.category === 'Investimentos'
-    let matchesDateRange = true
-    if (dateFrom.value) {
-      matchesDateRange = matchesDateRange && transaction.date >= dateFrom.value
-    }
-    if (dateTo.value) {
-      matchesDateRange = matchesDateRange && transaction.date <= dateTo.value
-    }
-    return isInvestment && matchesDateRange
-  }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-})
+const openAddForm = () => {
+  isEditing.value = false
+  currentInvestment.value = undefined
+  showForm.value = true
+}
 
-const totalInvestments = computed(() => {
-  return filteredTransactions.value.reduce((sum, t) => sum + t.amount, 0)
-})
+const openEditForm = (investment: Investment) => {
+  isEditing.value = true
+  currentInvestment.value = investment
+  showForm.value = true
+}
 
-const investmentsByCategory = computed(() => {
-  const result: Record<string, number> = {}
-  
-  filteredTransactions.value.forEach(t => {
-    if (!result[t.category]) {
-      result[t.category] = 0
-    }
-    result[t.category] += t.amount
-  })
-  
-  return result
-})
+const closeForm = () => {
+  showForm.value = false
+}
 
-const chartData = computed(() => {
-  const labels = Object.keys(investmentsByCategory.value)
-  const data = Object.values(investmentsByCategory.value)
-  
-  const backgroundColors = labels.map((_, index) => {
-    const hue = (index * 137) % 360
-    return `hsl(${hue}, 70%, 60%)`
-  })
-  
-  return {
-    labels,
-    datasets: [
-      {
-        data,
-        backgroundColor: backgroundColors,
-        borderWidth: 1
-      }
-    ]
-  }
-})
-
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      position: 'right' as const,
-      labels: {
-        font: {
-          size: 12
-        }
-      }
-    },
-    title: {
-      display: true,
-      text: 'Distribuição dos Investimentos',
-      font: {
-        size: 16
-      }
-    }
+const deleteInvestment = (id: string) => {
+  if (confirm('Tem certeza que deseja excluir este investimento?')) {
+    investmentsStore.deleteInvestment(id)
   }
 }
+
+const filteredInvestments = computed(() => {
+  return investmentsStore.investments.filter(investment => {
+    const matchesSearch = searchQuery.value === '' ||
+        investment.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        investment.broker.toLowerCase().includes(searchQuery.value.toLowerCase())
+
+    const matchesType = selectedType.value === '' ||
+        investment.type === selectedType.value
+
+    return matchesSearch && matchesType
+  }).sort((a, b) => new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime())
+})
 
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('pt-BR', {
@@ -99,112 +67,169 @@ const formatDate = (dateString: string) => {
   })
 }
 
-const resetFilters = () => {
-  dateFrom.value = ''
-  dateTo.value = ''
+const getTypeLabel = (type: string) => {
+  const typeObj = investmentsStore.investmentTypes.find(t => t.value === type)
+  return typeObj ? typeObj.label : type
 }
+
+const getReturnPercentage = (investment: Investment) => {
+  const returnValue = investment.currentValue - investment.amount
+  const percentage = (returnValue / investment.amount) * 100
+  return percentage
+}
+
+const getReturnClass = (investment: Investment) => {
+  const returnValue = investment.currentValue - investment.amount
+  return returnValue >= 0 ? 'text-success' : 'text-danger'
+}
+
+const resetFilters = () => {
+  searchQuery.value = ''
+  selectedType.value = ''
+}
+
+onMounted(() => {
+  if (!authStore.isAuthenticated) {
+    router.push('/login')
+  }
+})
 </script>
 
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
       <h1 class="text-2xl font-bold text-gray-900 mb-4 md:mb-0">Investimentos</h1>
-      
-      <div class="flex flex-wrap gap-4">
-        <div class="flex gap-4">
-          <div>
-            <label for="dateFrom" class="label">De</label>
-            <input
-              type="date"
-              id="dateFrom"
-              v-model="dateFrom"
+      <button @click="openAddForm" class="btn btn-primary">
+        Adicionar Investimento
+      </button>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="mb-6">
+      <InvestmentSummary />
+    </div>
+
+    <!-- Chart -->
+    <div class="mb-6">
+      <InvestmentChart />
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white p-4 rounded-lg shadow-md mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label for="search" class="label">Pesquisar</label>
+          <input
+              id="search"
+              v-model="searchQuery"
+              type="text"
               class="input"
-            />
-          </div>
-          <div>
-            <label for="dateTo" class="label">Até</label>
-            <input
-              type="date"
-              id="dateTo"
-              v-model="dateTo"
-              class="input"
-            />
-          </div>
+              placeholder="Pesquisar investimentos..."
+          />
         </div>
-        
-        <button @click="resetFilters" class="btn btn-secondary self-end">
-          Limpar Filtros
-        </button>
-      </div>
-    </div>
-
-    <!-- Resumo dos Investimentos -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-      <h2 class="text-lg font-semibold text-gray-700 mb-4">Total Investido</h2>
-      <div class="bg-blue-50 p-4 rounded-lg">
-        <p class="text-sm text-gray-500 mb-1">Valor Total em Investimentos</p>
-        <p class="text-2xl font-bold text-primary-600">
-          {{ formatCurrency(totalInvestments) }}
-        </p>
-      </div>
-    </div>
-
-    <!-- Gráfico de Distribuição -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-      <div class="h-80">
-        <Pie 
-          v-if="Object.keys(investmentsByCategory).length > 0"
-          :data="chartData" 
-          :options="chartOptions" 
-        />
-        <div v-else class="h-full flex items-center justify-center">
-          <p class="text-gray-500">Nenhum investimento registrado</p>
+        <div>
+          <label for="type" class="label">Tipo de Investimento</label>
+          <select id="type" v-model="selectedType" class="input">
+            <option value="">Todos os Tipos</option>
+            <option v-for="type in investmentsStore.investmentTypes" :key="type.value" :value="type.value">
+              {{ type.label }}
+            </option>
+          </select>
+        </div>
+        <div class="flex items-end">
+          <button @click="resetFilters" class="btn btn-secondary w-full">
+            Limpar Filtros
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Lista de Investimentos -->
+    <!-- Investments Table -->
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
-            <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Data
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Descrição
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Categoria
-              </th>
-              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Valor
-              </th>
-            </tr>
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Nome
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Tipo
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Corretora
+            </th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Valor Investido
+            </th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Valor Atual
+            </th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Retorno
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Data de Compra
+            </th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Ações
+            </th>
+          </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="transaction in filteredTransactions" :key="transaction.id">
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(transaction.date) }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {{ transaction.description }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ transaction.category }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-primary-600">
-                {{ formatCurrency(transaction.amount) }}
-              </td>
-            </tr>
-            <tr v-if="filteredTransactions.length === 0">
-              <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
-                Nenhum investimento encontrado
-              </td>
-            </tr>
+          <tr v-for="investment in filteredInvestments" :key="investment.id">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              {{ investment.name }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ getTypeLabel(investment.type) }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ investment.broker }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-gray-900">
+              {{ formatCurrency(investment.amount) }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-gray-900">
+              {{ formatCurrency(investment.currentValue) }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium" :class="getReturnClass(investment)">
+              {{ formatCurrency(investment.currentValue - investment.amount) }}
+              <br>
+              <span class="text-xs">
+                  ({{ getReturnPercentage(investment).toFixed(2) }}%)
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ formatDate(investment.purchaseDate) }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <button @click="openEditForm(investment)" class="text-primary-600 hover:text-primary-900 mr-3">
+                Editar
+              </button>
+              <button @click="deleteInvestment(investment.id)" class="text-danger hover:text-red-700">
+                Excluir
+              </button>
+            </td>
+          </tr>
+          <tr v-if="filteredInvestments.length === 0">
+            <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">
+              Nenhum investimento encontrado
+            </td>
+          </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- Investment Form Modal -->
+    <div v-if="showForm" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div class="max-w-2xl w-full max-h-screen overflow-y-auto">
+        <InvestmentForm
+            :investment="currentInvestment"
+            :is-editing="isEditing"
+            @close="closeForm"
+        />
       </div>
     </div>
   </div>
