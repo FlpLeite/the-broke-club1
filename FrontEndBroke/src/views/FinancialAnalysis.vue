@@ -2,36 +2,89 @@
   <div class="financial-analysis-view">
     <div class="header">
       <h1><i class="fas fa-chart-line"></i> Assistente Financeira Penny</h1>
-      <p class="subtitle">Obtenha insights personalizados sobre seus hábitos financeiros</p>
+      <p class="subtitle">Escolha o nível de análise para insights personalizados</p>
     </div>
 
     <div class="tabs">
       <button
-          @click="activeTab = 'analysis'"
-          :class="{ active: activeTab === 'analysis' }"
-          class="tab-button"
+        @click="activeTab = 'analysis'"
+        :class="{ active: activeTab === 'analysis' }"
+        class="tab-button"
       >
         <i class="fas fa-chart-pie"></i> Análise Automática
       </button>
       <button
-          @click="activeTab = 'chat'"
-          :class="{ active: activeTab === 'chat' }"
-          class="tab-button"
+        @click="activeTab = 'chat'"
+        :class="{ active: activeTab === 'chat' }"
+        class="tab-button"
       >
         <i class="fas fa-comments"></i> Chat com a Penny
       </button>
     </div>
 
     <div v-if="activeTab === 'analysis'" class="content-card">
-      <!-- Conteúdo existente da análise -->
+      <!-- Seletor de Nível de Análise -->
+      <div class="analysis-level-selector">
+        <h3><i class="fas fa-layer-group"></i> Nível de Análise</h3>
+        <p class="selector-description">
+          Escolha a profundidade da análise conforme suas necessidades
+        </p>
+        
+        <div class="level-cards">
+          <div
+            v-for="level in ANALYSIS_LEVELS"
+            :key="level.id"
+            :class="['level-card', { active: selectedLevel.id === level.id }]"
+            @click="selectedLevel = level"
+          >
+            <div class="level-icon">
+              <i :class="level.icon"></i>
+            </div>
+            <div class="level-info">
+              <h4>{{ level.name }}</h4>
+              <p>{{ level.description }}</p>
+            </div>
+            <div class="level-badge" :class="level.id">
+              {{ level.id.toUpperCase() }}
+            </div>
+          </div>
+        </div>
+
+        <div class="level-features">
+          <h4>Recursos incluídos:</h4>
+          <ul>
+            <li v-if="selectedLevel.id === 'bronze'">
+              <i class="fas fa-check"></i> Resumo executivo
+              <i class="fas fa-check"></i> Principais observações
+              <i class="fas fa-check"></i> Dica prática rápida
+            </li>
+            <li v-if="selectedLevel.id === 'prata'">
+              <i class="fas fa-check"></i> Panorama financeiro completo
+              <i class="fas fa-check"></i> Análise de padrões detalhada
+              <i class="fas fa-check"></i> Recomendações práticas
+              <i class="fas fa-check"></i> Saúde financeira básica
+            </li>
+            <li v-if="selectedLevel.id === 'ouro'">
+              <i class="fas fa-check"></i> Diagnóstico completo
+              <i class="fas fa-check"></i> Estratégias de otimização
+              <i class="fas fa-check"></i> Orçamento personalizado
+              <i class="fas fa-check"></i> Metas SMART
+              <i class="fas fa-check"></i> Saúde financeira avançada
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Controles de Análise -->
       <div class="analysis-controls">
         <button
-            @click="analyzeFinances"
-            :disabled="isLoading || !hasTransactions"
-            class="analyze-button"
+          @click="analyzeFinances"
+          :disabled="isLoading || !hasTransactions"
+          class="analyze-button"
+          :class="selectedLevel.id"
         >
           <span v-if="!isLoading">
-            <i class="fas fa-magic"></i> Gerar Análise
+            <i class="fas fa-magic"></i> Gerar Análise {{ selectedLevel.name }}
           </span>
           <span v-else>
             <i class="fas fa-spinner fa-spin"></i> Analisando...
@@ -48,6 +101,13 @@
       </div>
 
       <div v-if="advice" class="advice-container">
+        <div class="analysis-header" :class="selectedLevel.id">
+          <h3>
+            <i :class="selectedLevel.icon"></i>
+            Análise {{ selectedLevel.name }}
+          </h3>
+          <span class="analysis-badge">{{ selectedLevel.id.toUpperCase() }}</span>
+        </div>
         <div class="advice-content" v-html="formattedAdvice"></div>
       </div>
 
@@ -55,23 +115,32 @@
         <div class="empty-image-container">
           <img src="../assets/Penny.png" alt="Penny - Assistente Financeira" class="empty-image">
         </div>
-        <strong><h1 class="Apresentacao">Ola me chamo Penny sou IA Assistente da The Broke club</h1></strong>
-        <p>estou aqui para auxilia-lo com suas duvidas e ajudar a organizar sua situação financeira</p>
+        <strong><h1 class="Apresentacao">Olá, me chamo Penny!</h1></strong>
+        <p>Escolha um nível de análise acima para obter insights personalizados sobre sua situação financeira</p>
+        
+        <div class="level-comparison">
+          <h4>Como escolher o nível ideal:</h4>
+          <ul>
+            <li><strong>Bronze:</strong> Ideal para uma visão geral rápida</li>
+            <li><strong>Prata:</strong> Perfeito para otimização mensal</li>
+            <li><strong>Ouro:</strong> Recomendado para planejamento estratégico</li>
+          </ul>
+        </div>
       </div>
     </div>
 
     <div v-if="activeTab === 'chat'" class="content-card chat-container">
       <div class="chat-messages" ref="chatContainer">
         <div
-            v-for="(message, index) in chatMessages"
-            :key="index"
-            :class="['message', message.role]"
+          v-for="(message, index) in chatMessages"
+          :key="index"
+          :class="['message', message.role]"
         >
           <div class="message-header">
             <img
-                :src="message.role === 'user' ? userAvatar : pennyAvatar"
-                :alt="message.role === 'user' ? 'Seu avatar' : 'Penny - Assistente Financeira'"
-                class="empty-image-profile"
+              :src="message.role === 'user' ? userAvatar : pennyAvatar"
+              :alt="message.role === 'user' ? 'Seu avatar' : 'Penny - Assistente Financeira'"
+              class="empty-image-profile"
             />
             <strong>{{ message.role === 'user' ? 'Você' : 'Penny' }}</strong>
             <span class="message-time">{{ formatTime(message.timestamp) }}</span>
@@ -93,16 +162,16 @@
         <form @submit.prevent="sendMessage">
           <div class="input-group">
             <input
-                v-model="userMessage"
-                type="text"
-                placeholder="Pergunte algo sobre suas finanças..."
-                :disabled="isChatLoading || !hasTransactions"
-                class="chat-input"
+              v-model="userMessage"
+              type="text"
+              placeholder="Pergunte algo sobre suas finanças..."
+              :disabled="isChatLoading || !hasTransactions"
+              class="chat-input"
             />
             <button
-                type="submit"
-                :disabled="!userMessage || isChatLoading || !hasTransactions"
-                class="send-button"
+              type="submit"
+              :disabled="!userMessage || isChatLoading || !hasTransactions"
+              class="send-button"
             >
               <i class="fas fa-paper-plane"></i>
             </button>
@@ -116,10 +185,10 @@
         <div class="suggestions">
           <p>Tente perguntar:</p>
           <button
-              v-for="(suggestion, index) in suggestedQuestions"
-              :key="index"
-              @click="userMessage = suggestion; sendMessage()"
-              class="suggestion-button"
+            v-for="(suggestion, index) in suggestedQuestions"
+            :key="index"
+            @click="userMessage = suggestion; sendMessage()"
+            class="suggestion-button"
           >
             {{ suggestion }}
           </button>
@@ -134,7 +203,7 @@ import { ref, computed, onMounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { useTransactionsStore } from '../stores/transactions';
-import { geminiService } from '../services/iaService';
+import { geminiService, ANALYSIS_LEVELS, type AnalysisLevel, type AnalysisConfig } from '../services/iaService';
 import pennyAvatar from '../assets/Penny.png';
 import userAvatar from '../assets/user.svg';
 
@@ -147,6 +216,7 @@ const isLoading = ref(false);
 const error = ref('');
 const advice = ref('');
 const activeTab = ref<'analysis' | 'chat'>('analysis');
+const selectedLevel = ref<AnalysisLevel>(ANALYSIS_LEVELS[0]); // Bronze padrão
 
 // Variáveis para o chat
 const chatMessages = ref<Array<{
@@ -168,7 +238,7 @@ const suggestedQuestions = [
 
 const hasTransactions = computed(() => {
   return transactionsStore.transactions.length > 0 &&
-      !transactionsStore.transactions.some(t => isNaN(t.amount));
+    !transactionsStore.transactions.some(t => isNaN(t.amount));
 });
 
 const loadData = async () => {
@@ -209,12 +279,21 @@ const analyzeFinances = async () => {
       return;
     }
 
+    const config: AnalysisConfig = {
+      level: selectedLevel.value,
+      includePatterns: true,
+      includeRecommendations: true,
+      includeBudget: selectedLevel.value.id !== 'bronze',
+      includeGoals: selectedLevel.value.id === 'ouro',
+      includeHealth: true
+    };
+
     const timeout = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Tempo excedido na análise')), 30000)
+      setTimeout(() => reject(new Error('Tempo excedido na análise')), 30000)
     );
 
     advice.value = await Promise.race([
-      geminiService.getFinancialAdvice(transactionsStore.transactions),
+      geminiService.getFinancialAdvice(transactionsStore.transactions, config),
       timeout
     ]);
   } catch (err) {
@@ -269,10 +348,10 @@ const sendMessage = async () => {
 
 /* ===== Renderizador de Markdown (sem libs) ===== */
 const escapeHtml = (str: string) =>
-    str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+  str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 
 const renderMarkdown = (md: string) => {
   if (!md) return '';
@@ -292,24 +371,24 @@ const renderMarkdown = (md: string) => {
 
   // 4) Títulos
   md = md
-      .replace(/^###### (.*)$/gm, '<h6>$1</h6>')
-      .replace(/^##### (.*)$/gm, '<h5>$1</h5>')
-      .replace(/^#### (.*)$/gm, '<h4>$1</h4>')
-      .replace(/^### (.*)$/gm, '<h3>$1</h3>')
-      .replace(/^## (.*)$/gm, '<h2>$1</h2>')
-      .replace(/^# (.*)$/gm, '<h1>$1</h1>');
+    .replace(/^###### (.*)$/gm, '<h6>$1</h6>')
+    .replace(/^##### (.*)$/gm, '<h5>$1</h5>')
+    .replace(/^#### (.*)$/gm, '<h4>$1</h4>')
+    .replace(/^### (.*)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.*)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.*)$/gm, '<h1>$1</h1>');
 
   // 5) Negrito e itálico
   md = md
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      .replace(/__(.+?)__/g, '<strong>$1</strong>')
-      .replace(/_(.+?)_/g, '<em>$1</em>');
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/__(.+?)__/g, '<strong>$1</strong>')
+    .replace(/_(.+?)_/g, '<em>$1</em>');
 
   // 6) Links [texto](url)
   md = md.replace(
-      /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
-      `<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>`
+    /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+    `<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>`
   );
 
   // 7) Listas (ul/ol) por linhas
@@ -442,8 +521,8 @@ onMounted(async () => {
 }
 
 .tab-button.active {
-  color: #4CAF50;
-  border-bottom-color: #4CAF50;
+  color: #0062a3;
+  border-bottom-color: #4c90af;
   font-weight: 600;
 }
 
@@ -721,6 +800,173 @@ onMounted(async () => {
   background-color: #4B5563;
 }
 
+/* ===== Estilos para o Seletor de Níveis ===== */
+.analysis-level-selector {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+.dark .analysis-level-selector {
+  background: linear-gradient(135deg, #1F2937 0%, #374151 100%);
+  border-color: #4B5563;
+}
+
+.selector-description {
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.level-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.level-card {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .level-card {
+  background: #1F2937;
+  border-color: #4B5563;
+}
+
+.level-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.level-card.active {
+  border-color: #4CAF50;
+  background: linear-gradient(135deg, #f0f9f0 0%, #e8f5e8 100%);
+}
+
+.dark .level-card.active {
+  background: linear-gradient(135deg, #1B3B1B 0%, #1A331A 100%);
+}
+
+.level-card.bronze.active {
+  border-color: #CD7F32;
+  background: linear-gradient(135deg, #fdf6f0 0%, #fcefe6 100%);
+}
+
+.level-card.prata.active {
+  border-color: #C0C0C0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.level-card.ouro.active {
+  border-color: #FFD700;
+  background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%);
+}
+
+.level-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #6c757d;
+}
+
+.level-card.active .level-icon {
+  color: #4CAF50;
+}
+
+.level-card.bronze.active .level-icon {
+  color: #CD7F32;
+}
+
+.level-card.prata.active .level-icon {
+  color: #C0C0C0;
+}
+
+.level-card.ouro.active .level-icon {
+  color: #FFD700;
+}
+
+.level-info h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.level-info p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.level-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.level-badge.bronze {
+  background: #CD7F32;
+  color: white;
+}
+
+.level-badge.prata {
+  background: #C0C0C0;
+  color: #333;
+}
+
+.level-badge.ouro {
+  background: #FFD700;
+  color: #333;
+}
+
+.level-features {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.dark .level-features {
+  background: #1F2937;
+  border-color: #4B5563;
+}
+
+.level-features h4 {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.level-features ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.level-features li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.level-features i.fa-check {
+  color: #4CAF50;
+}
+
 .analysis-controls {
   display: flex;
   flex-direction: column;
@@ -729,7 +975,7 @@ onMounted(async () => {
 }
 
 .analyze-button {
-  background-color: #4CAF50;
+  background-color: #368dff;
   color: white;
   border: none;
   padding: 12px 24px;
@@ -743,15 +989,42 @@ onMounted(async () => {
   font-weight: 600;
 }
 
+.analyze-button.bronze {
+  background-color: #CD7F32;
+}
+
+.analyze-button.prata {
+  background-color: #C0C0C0;
+  color: #333;
+}
+
+.analyze-button.ouro {
+  background-color: #FFD700;
+  color: #333;
+}
+
 .analyze-button:hover:not(:disabled) {
-  background-color: #3d8b40;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.analyze-button.bronze:hover:not(:disabled) {
+  background-color: #b56a28;
+}
+
+.analyze-button.prata:hover:not(:disabled) {
+  background-color: #a8a8a8;
+}
+
+.analyze-button.ouro:hover:not(:disabled) {
+  background-color: #e6c200;
 }
 
 .analyze-button:disabled {
   background-color: #b0bec5;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .warning-message {
@@ -777,6 +1050,57 @@ onMounted(async () => {
   margin-top: 2rem;
   border-top: 1px solid #eee;
   padding-top: 1.5rem;
+}
+
+.analysis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.analysis-header.bronze {
+  border-bottom-color: #CD7F32;
+}
+
+.analysis-header.prata {
+  border-bottom-color: #C0C0C0;
+}
+
+.analysis-header.ouro {
+  border-bottom-color: #FFD700;
+}
+
+.analysis-header h3 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.analysis-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.analysis-badge.bronze {
+  background: #CD7F32;
+  color: white;
+}
+
+.analysis-badge.prata {
+  background: #C0C0C0;
+  color: #333;
+}
+
+.analysis-badge.ouro {
+  background: #FFD700;
+  color: #333;
 }
 
 .advice-content {
@@ -808,7 +1132,7 @@ onMounted(async () => {
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid #4CAF50;
+  border: 4px solid #00fff2;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -824,6 +1148,37 @@ onMounted(async () => {
 .empty-state h3 {
   color: #2c3e50;
   margin-bottom: 1rem;
+}
+
+.level-comparison {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.dark .level-comparison {
+  background: #1F2937;
+}
+
+.level-comparison h4 {
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.dark .level-comparison h4 {
+  color: #F3F7FA;
+}
+
+.level-comparison ul {
+  text-align: left;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.level-comparison li {
+  margin-bottom: 0.5rem;
+  padding-left: 1rem;
 }
 
 .empty-state ul {

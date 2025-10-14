@@ -1,3 +1,4 @@
+// iaService.ts completo
 import axios from 'axios';
 
 export interface GeminiResponse {
@@ -25,11 +26,59 @@ export interface ChatMessage {
   content: string;
 }
 
+export interface AnalysisLevel {
+  id: 'bronze' | 'prata' | 'ouro';
+  name: string;
+  description: string;
+  icon: string;
+  maxOutputTokens: number;
+  temperature: number;
+}
+
+export interface AnalysisConfig {
+  level: AnalysisLevel;
+  includePatterns: boolean;
+  includeRecommendations: boolean;
+  includeBudget: boolean;
+  includeGoals: boolean;
+  includeHealth: boolean;
+}
+
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
+export const ANALYSIS_LEVELS: AnalysisLevel[] = [
+  {
+    id: 'bronze',
+    name: 'Bronze',
+    description: 'Análise básica com insights gerais',
+    icon: 'fas fa-copper',
+    maxOutputTokens: 1024,
+    temperature: 0.3
+  },
+  {
+    id: 'prata',
+    name: 'Prata',
+    description: 'Análise intermediária com recomendações práticas',
+    icon: 'fas fa-ring',
+    maxOutputTokens: 1536,
+    temperature: 0.5
+  },
+  {
+    id: 'ouro',
+    name: 'Ouro',
+    description: 'Análise completa com planejamento detalhado',
+    icon: 'fas fa-crown',
+    maxOutputTokens: 2048,
+    temperature: 0.7
+  }
+];
+
 export const geminiService = {
-  async getFinancialAdvice(transactions: Transaction[]): Promise<string> {
+  async getFinancialAdvice(
+    transactions: Transaction[], 
+    config: AnalysisConfig = getDefaultConfig()
+  ): Promise<string> {
     try {
       if (!transactions?.length) {
         throw new Error('Nenhuma transação fornecida para análise');
@@ -49,54 +98,36 @@ export const geminiService = {
         .reduce((sum, t) => sum + t.amount, 0);
       
       const balance = totalIncome - totalExpenses;
+      
       const expenseCategories = [...new Set(transactions
         .filter(t => t.type === 'expense')
         .map(t => t.category))];
 
-      const prompt = `
-        Você é <strong>Penny</strong>, uma assistente financeira IA. Analise este histórico e forneça:
+      // Mapeia categorias com totais
+      const categoryTotals = transactions
+        .filter(t => t.type === 'expense')
+        .reduce((acc, t) => {
+          acc[t.category] = (acc[t.category] || 0) + t.amount;
+          return acc;
+        }, {} as Record<string, number>);
 
-        DADOS DO CLIENTE:
-        ${formattedTransactions}
+      const categoryAnalysis = Object.entries(categoryTotals)
+        .map(([category, total]) => `- ${category}: R$${total.toFixed(2)}`)
+        .join('\n');
 
-        RESUMO FINANCEIRO:
-        - Renda Total: R$${totalIncome.toFixed(2)}
-        - Despesas Totais: R$${totalExpenses.toFixed(2)}
-        - Saldo Atual: R$${balance.toFixed(2)}
-        - Categorias de Gastos: ${expenseCategories.join(', ')}
+      const prompt = this.buildAnalysisPrompt({
+        transactions: formattedTransactions,
+        summary: {
+          totalIncome,
+          totalExpenses,
+          balance,
+          expenseCategories,
+          categoryAnalysis
+        },
+        config
+      });
 
-        FORNECER EM MARKDOWN:
-        ### 🔍 Análise de Padrões
-        - Identifique 2-3 padrões de gastos principais
-        - Destaque sazonalidades ou hábitos recorrentes
-        - Mostrar ganhos totais e despesas no começo da analise
-
-        ### 💡 Recomendações de Economia
-        - Sugira 3 categorias para redução
-        - Ofereça alternativas concretas
-
-        ### 📊 Sugestão de Orçamento
-        - Proponha alocação percentual por categoria
-        - Baseado nos gastos históricos
-
-        ### 🎯 Metas Financeiras
-        - 2 metas SMART personalizadas
-        - Com prazos e valores específicos
-
-        ### 🛡️ Saúde Financeira
-        - Avalie situação de emergência
-        - Recomende valor para reserva
-
-        REGRAS:
-        - Linguagem clara e motivadora
-        - Formato markdown com títulos
-        - Destaque valores importantes em <strong>negrito</strong> e seu nome
-        - Seja específico e acionável
-        - Caso o usuario tenha um controle estavel elogie ele por isso explicando pontos impotantes que podem prejudica-lo caso nao tome cuidado, diga isso na saude financeira
-        - Caso o usuario nao tenha controle ajude-o com isso e recomende oque fazer
-      `;
-
-      const response = await this.callGeminiAPI(prompt);
+      const response = await this.callGeminiAPI(prompt, config.level);
       return response;
     } catch (error) {
       console.error('Erro na API Gemini:', error);
@@ -104,6 +135,137 @@ export const geminiService = {
         error instanceof Error ? error.message : 'Erro desconhecido'
       }`;
     }
+  },
+
+  buildAnalysisPrompt(params: {
+    transactions: string;
+    summary: {
+      totalIncome: number;
+      totalExpenses: number;
+      balance: number;
+      expenseCategories: string[];
+      categoryAnalysis: string;
+    };
+    config: AnalysisConfig;
+  }): string {
+    const { transactions, summary, config } = params;
+    const { level } = config;
+
+    const basePrompt = `
+      Você é <strong>Penny</strong>, uma assistente financeira IA. 
+      Nível de análise: ${level.name.toUpperCase()}
+      
+      DADOS DO CLIENTE:
+      ${transactions}
+
+      RESUMO FINANCEIRO:
+      - Renda Total: R$${summary.totalIncome.toFixed(2)}
+      - Despesas Totais: R$${summary.totalExpenses.toFixed(2)}
+      - Saldo Atual: R$${summary.balance.toFixed(2)}
+      - Análise por Categoria:
+      ${summary.categoryAnalysis}
+
+      REGRAS GERAIS:
+      - Linguagem clara e motivadora
+      - Formato markdown
+      - Destaque valores importantes em <strong>negrito</strong>
+      - Seja específico e acionável
+    `;
+
+    const bronzePrompt = `
+      ${basePrompt}
+      
+      FORNECER EM MARKDOWN:
+      ### 📊 Resumo Executivo
+      - Ganhos totais: R$${summary.totalIncome.toFixed(2)}
+      - Despesas totais: R$${summary.totalExpenses.toFixed(2)}
+      - Saldo final: R$${summary.balance.toFixed(2)}
+      
+      ### 🔍 Principais Observações
+      - Identifique 1-2 padrões mais evidentes
+      - Destaque a categoria com maior gasto
+      - Menção breve sobre saúde financeira
+      
+      ### 💡 Dica Rápida
+      - Uma recomendação prática principal
+      
+      LIMITAÇÕES: Resposta objetiva (máx. 3 parágrafos)
+    `;
+
+    const prataPrompt = `
+      ${basePrompt}
+      
+      FORNECER EM MARKDOWN:
+      ### 📊 Panorama Financeiro
+      - **Ganhos Totais**: R$${summary.totalIncome.toFixed(2)}
+      - **Despesas Totais**: R$${summary.totalExpenses.toFixed(2)}
+      - **Saldo Final**: R$${summary.balance.toFixed(2)}
+      
+      ### 🔍 Análise de Padrões
+      - Identifique 2-3 padrões de gastos principais
+      - Compare categorias com maiores valores
+      - Destaque sazonalidades ou hábitos recorrentes
+      
+      ### 💡 Recomendações Práticas
+      - Sugira 2 categorias para otimização
+      - Ofereça alternativas concretas
+      - Meta de economia mensal sugerida
+      
+      ### 📈 Saúde Financeira
+      - Avalie situação atual
+      - Recomendação básica para reserva
+      
+      FOCO: Equilíbrio entre detalhamento e praticidade
+    `;
+
+    const ouroPrompt = `
+      ${basePrompt}
+      
+      FORNECER EM MARKDOWN:
+      ### 📊 Diagnóstico Completo
+      - **Renda Total**: R$${summary.totalIncome.toFixed(2)}
+      - **Despesas Totais**: R$${summary.totalExpenses.toFixed(2)}
+      - **Saldo Atual**: R$${summary.balance.toFixed(2)}
+      - **Taxa de Poupança**: ${((summary.balance / summary.totalIncome) * 100).toFixed(1)}%
+      
+      ### 🔍 Análise Detalhada de Padrões
+      - Identifique 3-4 padrões comportamentais
+      - Análise sazonal e comparativa
+      - Tendências de crescimento/redução
+      - Benchmark com médias do setor
+      
+      ### 💡 Estratégias de Otimização
+      - 3-4 categorias para redução com justificativa
+      - Plano de ação específico por categoria
+      - Potencial de economia mensal/anual
+      - Alternativas inteligentes
+      
+      ### 📊 Orçamento Personalizado
+      - Proposta de alocação percentual ideal
+      - Metas por categoria baseada em histórico
+      - Projeção de crescimento patrimonial
+      
+      ### 🎯 Metas SMART
+      - 2 metas de curto prazo (1-3 meses)
+      - 2 metas de médio/longo prazo (6-12 meses)
+      - Plano de ação detalhado para cada meta
+      
+      ### 🛡️ Saúde Financeira Avançada
+      - Análise de reserva de emergência
+      - Estratégia de formação de patrimônio
+      - Recomendações de proteção financeira
+      - Indicadores de alerta e sucesso
+      
+      FOCO: Plano financeiro completo e personalizado
+    `;
+
+    const prompts = {
+      bronze: bronzePrompt,
+      prata: prataPrompt,
+      ouro: ouroPrompt
+    };
+
+    return prompts[level.id];
   },
 
   async chatWithAI(params: {
@@ -177,7 +339,7 @@ export const geminiService = {
         "Não encontrei transações em [categoria]. Poderia confirmar se..."
       `;
 
-      const response = await this.callGeminiAPI(prompt);
+      const response = await this.callGeminiAPI(prompt, ANALYSIS_LEVELS[1]); // Prata para chat
       return response;
     } catch (error) {
       console.error('Erro no chat com a IA:', error);
@@ -185,7 +347,7 @@ export const geminiService = {
     }
   },
 
-   async callGeminiAPI(prompt: string): Promise<string> {
+  async callGeminiAPI(prompt: string, level: AnalysisLevel): Promise<string> {
     try {
       const response = await axios.post<GeminiResponse>(
         `${GEMINI_API_URL}?key=${GEMINI_API_KEY}`,
@@ -194,9 +356,9 @@ export const geminiService = {
             parts: [{ text: prompt }]
           }],
           generationConfig: {
-            temperature: 0.7,
+            temperature: level.temperature,
             topP: 0.9,
-            maxOutputTokens: 2048
+            maxOutputTokens: level.maxOutputTokens
           }
         },
         {
@@ -215,3 +377,15 @@ export const geminiService = {
     }
   }
 };
+
+// Função auxiliar
+function getDefaultConfig(): AnalysisConfig {
+  return {
+    level: ANALYSIS_LEVELS[0], // Bronze
+    includePatterns: true,
+    includeRecommendations: true,
+    includeBudget: false,
+    includeGoals: false,
+    includeHealth: true
+  };
+}
