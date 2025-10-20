@@ -22,6 +22,58 @@ namespace TheBrokeAPI.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("TheBrokeClub.API.Models.Investimento", b =>
+            {
+                b.Property<int>("IdInvestimento")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer")
+                    .HasColumnName("id_investimento");
+
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdInvestimento"));
+
+                b.Property<string>("Corretora")
+                    .IsRequired()
+                    .HasColumnType("text")
+                    .HasColumnName("corretora");
+
+                b.Property<DateTime>("DataCompra")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("data_compra");
+
+                b.Property<int>("IdUsuario")
+                    .HasColumnType("integer")
+                    .HasColumnName("id_usuario");
+
+                b.Property<string>("Nome")
+                    .IsRequired()
+                    .HasColumnType("text")
+                    .HasColumnName("nome");
+
+                b.Property<string>("Notas")
+                    .HasColumnType("text")
+                    .HasColumnName("notas");
+
+                b.Property<string>("Tipo")
+                    .IsRequired()
+                    .HasColumnType("text")
+                    .HasColumnName("tipo");
+
+                b.Property<decimal>("ValorAtual")
+                    .HasColumnType("decimal(18,2)")
+                    .HasColumnName("valor_atual");
+
+                b.Property<decimal>("ValorInvestido")
+                    .HasColumnType("decimal(18,2)")
+                    .HasColumnName("valor_investido");
+
+                b.HasKey("IdInvestimento");
+
+                b.HasIndex("IdUsuario");
+
+                b.ToTable("investimentos", (string)null);
+            });
+
+
             modelBuilder.Entity("TheBrokeClub.API.Models.Metas", b =>
                 {
                     b.Property<int>("IdObjetivo")
@@ -134,6 +186,17 @@ namespace TheBrokeAPI.Migrations
 
                     b.ToTable("transacao", (string)null);
                 });
+            modelBuilder.Entity("TheBrokeClub.API.Models.Investimento", b =>
+            {
+                b.HasOne("TheBrokeClub.API.Models.Usuario", "Usuario")
+                    .WithMany()
+                    .HasForeignKey("IdUsuario")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("Usuario");
+            });
+
 
             modelBuilder.Entity("TheBrokeClub.API.Models.Metas", b =>
                 {

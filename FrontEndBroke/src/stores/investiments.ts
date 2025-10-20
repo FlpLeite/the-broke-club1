@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import axios from 'axios'
+import { useAuthStore } from './auth'
 
 export interface Investment {
     id: string
@@ -12,49 +14,27 @@ export interface Investment {
     notes?: string
 }
 
+const formatDateToISO = (date: string | Date) => {
+    const parsedDate = typeof date === 'string' ? new Date(date) : date
+    return new Date(parsedDate).toISOString().split('T')[0]
+}
+
+const mapFromApi = (investment: any): Investment => ({
+    id: investment.idInvestimento.toString(),
+    name: investment.nome,
+    type: investment.tipo as Investment['type'],
+    amount: Number(investment.valorInvestido),
+    currentValue: Number(investment.valorAtual),
+    purchaseDate: formatDateToISO(investment.dataCompra),
+    broker: investment.corretora ?? '',
+    notes: investment.notas ?? ''
+})
+
+
 export const useInvestmentsStore = defineStore('investments', () => {
-    const investments = ref<Investment[]>([
-        {
-            id: '1',
-            name: 'ITUB4',
-            type: 'stocks',
-            amount: 1000,
-            currentValue: 1150,
-            purchaseDate: '2024-12-01',
-            broker: 'XP Investimentos',
-            notes: 'Ações do Itaú Unibanco'
-        },
-        {
-            id: '2',
-            name: 'Tesouro Selic 2029',
-            type: 'bonds',
-            amount: 2000,
-            currentValue: 2080,
-            purchaseDate: '2024-11-15',
-            broker: 'Tesouro Direto',
-            notes: 'Título público indexado à Selic'
-        },
-        {
-            id: '3',
-            name: 'Bitcoin',
-            type: 'crypto',
-            amount: 500,
-            currentValue: 620,
-            purchaseDate: '2024-10-20',
-            broker: 'Binance',
-            notes: 'Criptomoeda'
-        },
-        {
-            id: '4',
-            name: 'Fundo Imobiliário HGLG11',
-            type: 'real_estate',
-            amount: 1500,
-            currentValue: 1420,
-            purchaseDate: '2024-09-10',
-            broker: 'Rico',
-            notes: 'Fundo de investimento imobiliário'
-        }
-    ])
+    const investments = ref<Investment[]>([])
+    const isLoading = ref(false)
+    const error = ref<string | null>(null)
 
     const investmentTypes = [
         { value: 'stocks', label: 'Ações' },
@@ -64,24 +44,90 @@ export const useInvestmentsStore = defineStore('investments', () => {
         { value: 'real_estate', label: 'Fundos Imobiliários' },
         { value: 'savings', label: 'Poupança' }
     ]
+    const addInvestment = async (investment: Omit<Investment, 'id'>) => {
+        try {
+            const authStore = useAuthStore()
+            const idUsuario = authStore.user?.idUsuario
 
-    const addInvestment = (investment: Omit<Investment, 'id'>) => {
-        const newInvestment = {
-            ...investment,
-            id: Date.now().toString()
+            if (!idUsuario) {
+                throw new Error('Usuário não autenticado.')
+            }
+
+            const response = await axios.post('http://localhost:5024/investimentos', {
+                idUsuario,
+                nome: investment.name,
+                tipo: investment.type,
+                valorInvestido: investment.amount,
+                valorAtual: investment.currentValue,
+                dataCompra: new Date(investment.purchaseDate).toISOString(),
+                corretora: investment.broker,
+                notas: investment.notes
+            })
+
+            const novoInvestimento = mapFromApi(response.data)
+            investments.value.push(novoInvestimento)
+        } catch (err) {
+            console.error('Erro ao adicionar investimento:', err)
+            throw err
         }
-        investments.value.push(newInvestment)
     }
 
-    const updateInvestment = (id: string, updatedInvestment: Omit<Investment, 'id'>) => {
-        const index = investments.value.findIndex(i => i.id === id)
-        if (index !== -1) {
-            investments.value[index] = { ...updatedInvestment, id }
+    const updateInvestment = async (id: string, updatedInvestment: Omit<Investment, 'id'>) => {
+        try {
+            await axios.put(`http://localhost:5024/investimentos/${id}`, {
+                nome: updatedInvestment.name,
+                tipo: updatedInvestment.type,
+                valorInvestido: updatedInvestment.amount,
+                valorAtual: updatedInvestment.currentValue,
+                dataCompra: new Date(updatedInvestment.purchaseDate).toISOString(),
+                corretora: updatedInvestment.broker,
+                notas: updatedInvestment.notes
+            })
+
+            const index = investments.value.findIndex(i => i.id === id)
+            if (index !== -1) {
+                investments.value[index] = {
+                    ...updatedInvestment,
+                    purchaseDate: formatDateToISO(updatedInvestment.purchaseDate),
+                    id
+                }
+            }
+        } catch (err) {
+            console.error('Erro ao atualizar investimento:', err)
+            throw err
         }
     }
 
-    const deleteInvestment = (id: string) => {
-        investments.value = investments.value.filter(i => i.id !== id)
+    const deleteInvestment = async (id: string) => {
+        try {
+            await axios.delete(`http://localhost:5024/investimentos/${id}`)
+            investments.value = investments.value.filter(i => i.id !== id)
+        } catch (err) {
+            console.error('Erro ao excluir investimento:', err)
+            throw err
+        }
+    }
+
+    const loadInvestments = async () => {
+        try {
+            isLoading.value = true
+            error.value = null
+
+            const authStore = useAuthStore()
+            const idUsuario = authStore.user?.idUsuario
+
+            if (!idUsuario) {
+                throw new Error('Usuário não autenticado.')
+            }
+
+            const response = await axios.get(`http://localhost:5024/investimentos/usuario/${idUsuario}`)
+            investments.value = response.data.map((investment: any) => mapFromApi(investment))
+        } catch (err: any) {
+            console.error('Erro ao carregar investimentos:', err)
+            error.value = err?.message ?? 'Erro ao carregar investimentos.'
+        } finally {
+            isLoading.value = false
+        }
     }
 
     const totalInvested = computed(() => {
@@ -122,9 +168,12 @@ export const useInvestmentsStore = defineStore('investments', () => {
     return {
         investments,
         investmentTypes,
+        isLoading,
+        error,
         addInvestment,
         updateInvestment,
         deleteInvestment,
+        loadInvestments,
         totalInvested,
         totalCurrentValue,
         totalReturn,
