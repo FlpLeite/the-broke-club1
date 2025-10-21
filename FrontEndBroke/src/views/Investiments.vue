@@ -33,9 +33,9 @@ const closeForm = () => {
   showForm.value = false
 }
 
-const deleteInvestment = (id: string) => {
+const deleteInvestment = async (id: string) => {
   if (confirm('Tem certeza que deseja excluir este investimento?')) {
-    investmentsStore.deleteInvestment(id)
+    await investmentsStore.deleteInvestment(id)
   }
 }
 
@@ -88,10 +88,12 @@ const resetFilters = () => {
   selectedType.value = ''
 }
 
-onMounted(() => {
+onMounted(async () => {
   if (!authStore.isAuthenticated) {
     router.push('/login')
+    return
   }
+  await investmentsStore.loadInvestments()
 })
 </script>
 
@@ -146,8 +148,14 @@ onMounted(() => {
 
     <!-- Investments Table -->
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div v-if="investmentsStore.isLoading" class="px-6 py-4 text-sm text-gray-500">
+        Carregando investimentos...
+      </div>
+      <div v-else-if="investmentsStore.error" class="px-6 py-4 text-sm text-red-600">
+        {{ investmentsStore.error }}
+      </div>
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
+        <table class="min-w-full divide-y divide-gray-200" v-if="!investmentsStore.isLoading && !investmentsStore.error">
           <thead class="bg-gray-50">
           <tr>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -212,7 +220,7 @@ onMounted(() => {
               </button>
             </td>
           </tr>
-          <tr v-if="filteredInvestments.length === 0">
+          <tr v-if="!investmentsStore.isLoading && filteredInvestments.length === 0">
             <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">
               Nenhum investimento encontrado
             </td>

@@ -77,13 +77,16 @@ const handleSubmit = () => {
     notes: notes.value
   }
 
-  if (props.isEditing && props.investment) {
-    investmentsStore.updateInvestment(props.investment.id, investmentData)
-  } else {
-    investmentsStore.addInvestment(investmentData)
+  try {
+    if (props.isEditing && props.investment) {
+      await investmentsStore.updateInvestment(props.investment.id, investmentData)
+    } else {
+      await investmentsStore.addInvestment(investmentData)
+    }
+    emit('close')
+  } catch (error) {
+    console.error('Erro ao salvar investimento:', error)
   }
-
-  emit('close')
 }
 </script>
 

@@ -1,0 +1,227 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using TheBrokeClub.API.Data;
+
+#nullable disable
+
+namespace TheBrokeAPI.Migrations
+{
+    [DbContext(typeof(AppDbContext))]
+    [Migration("20250508000000_CreateInvestimentosTable")]
+    partial class CreateInvestimentosTable
+    {
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        {
+#pragma warning disable 612, 618
+            modelBuilder
+                .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("TheBrokeClub.API.Models.Investimento", b =>
+            {
+                b.Property<int>("IdInvestimento")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer")
+                    .HasColumnName("id_investimento");
+
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdInvestimento"));
+
+                b.Property<string>("Corretora")
+                    .IsRequired()
+                    .HasColumnType("text")
+                    .HasColumnName("corretora");
+
+                b.Property<DateTime>("DataCompra")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("data_compra");
+
+                b.Property<int>("IdUsuario")
+                    .HasColumnType("integer")
+                    .HasColumnName("id_usuario");
+
+                b.Property<string>("Nome")
+                    .IsRequired()
+                    .HasColumnType("text")
+                    .HasColumnName("nome");
+
+                b.Property<string>("Notas")
+                    .HasColumnType("text")
+                    .HasColumnName("notas");
+
+                b.Property<string>("Tipo")
+                    .IsRequired()
+                    .HasColumnType("text")
+                    .HasColumnName("tipo");
+
+                b.Property<decimal>("ValorAtual")
+                    .HasColumnType("decimal(18,2)")
+                    .HasColumnName("valor_atual");
+
+                b.Property<decimal>("ValorInvestido")
+                    .HasColumnType("decimal(18,2)")
+                    .HasColumnName("valor_investido");
+
+                b.HasKey("IdInvestimento");
+
+                b.HasIndex("IdUsuario");
+
+                b.ToTable("investimentos", (string)null);
+            });
+
+            modelBuilder.Entity("TheBrokeClub.API.Models.Metas", b =>
+            {
+                b.Property<int>("IdObjetivo")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer")
+                    .HasColumnName("id_objetivo");
+
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdObjetivo"));
+
+                b.Property<string>("Categoria")
+                    .IsRequired()
+                    .HasColumnType("text")
+                    .HasColumnName("categoria");
+
+                b.Property<DateTime>("DataLimite")
+                    .HasColumnType("timestamp with time zone")
+                    .HasColumnName("data_limite");
+
+                b.Property<string>("Descricao")
+                    .HasColumnType("text")
+                    .HasColumnName("descricao");
+
+                b.Property<int>("IdUsuario")
+                    .HasColumnType("integer")
+                    .HasColumnName("id_usuario");
+
+                b.Property<string>("Titulo")
+                    .IsRequired()
+                    .HasColumnType("text")
+                    .HasColumnName("titulo");
+
+                b.Property<decimal>("ValorAtual")
+                    .HasColumnType("decimal(18,2)")
+                    .HasColumnName("valor_atual");
+
+                b.Property<decimal>("ValorMeta")
+                    .HasColumnType("decimal(18,2)")
+                    .HasColumnName("valor_meta");
+
+                b.HasKey("IdObjetivo");
+
+                b.HasIndex("IdUsuario");
+
+                b.ToTable("metas", (string)null);
+            });
+
+            modelBuilder.Entity("TheBrokeClub.API.Models.Usuario", b =>
+            {
+                b.Property<int>("IdUsuario")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
+
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdUsuario"));
+
+                b.Property<DateTime>("DataCriacao")
+                    .HasColumnType("timestamp with time zone");
+
+                b.Property<string>("Email")
+                    .IsRequired()
+                    .HasColumnType("text");
+
+                b.Property<string>("Nome")
+                    .IsRequired()
+                    .HasColumnType("text");
+
+                b.Property<string>("SenhaHash")
+                    .IsRequired()
+                    .HasColumnType("text");
+
+                b.HasKey("IdUsuario");
+
+                b.ToTable("usuario", (string)null);
+            });
+
+            modelBuilder.Entity("Transacao", b =>
+            {
+                b.Property<int>("IdTransacao")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
+
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdTransacao"));
+
+                b.Property<string>("Categoria")
+                    .IsRequired()
+                    .HasColumnType("text");
+
+                b.Property<DateTime>("DataTransacao")
+                    .HasColumnType("timestamp with time zone");
+
+                b.Property<string>("Descricao")
+                    .IsRequired()
+                    .HasColumnType("text");
+
+                b.Property<int>("IdUsuario")
+                    .HasColumnType("integer");
+
+                b.Property<string>("Tipo")
+                    .IsRequired()
+                    .HasColumnType("text");
+
+                b.Property<int?>("UsuarioIdUsuario")
+                    .HasColumnType("integer");
+
+                b.Property<decimal>("Valor")
+                    .HasColumnType("numeric");
+
+                b.HasKey("IdTransacao");
+
+                b.HasIndex("UsuarioIdUsuario");
+
+                b.ToTable("transacao", (string)null);
+            });
+
+            modelBuilder.Entity("TheBrokeClub.API.Models.Investimento", b =>
+            {
+                b.HasOne("TheBrokeClub.API.Models.Usuario", "Usuario")
+                    .WithMany()
+                    .HasForeignKey("IdUsuario")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("Usuario");
+            });
+
+            modelBuilder.Entity("TheBrokeClub.API.Models.Metas", b =>
+            {
+                b.HasOne("TheBrokeClub.API.Models.Usuario", "Usuario")
+                    .WithMany()
+                    .HasForeignKey("IdUsuario")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("Usuario");
+            });
+
+            modelBuilder.Entity("Transacao", b =>
+            {
+                b.HasOne("TheBrokeClub.API.Models.Usuario", null)
+                    .WithMany("Transacoes")
+                    .HasForeignKey("UsuarioIdUsuario");
+            });
+
+            modelBuilder.Entity("TheBrokeClub.API.Models.Usuario", b =>
+            {
+                b.Navigation("Transacoes");
+            });
+#pragma warning restore 612, 618
+        }
+    }
+}
