@@ -52,7 +52,7 @@ export const ANALYSIS_LEVELS: AnalysisLevel[] = [
     id: 'bronze',
     name: 'Bronze',
     description: 'Análise básica com insights gerais',
-    icon: 'fas fa-copper',
+    icon: 'fa-solid fa-dice-d6',
     maxOutputTokens: 1024,
     temperature: 0.3
   },
