@@ -64,7 +64,7 @@ const validateForm = () => {
   return isValid
 }
 
-const handleSubmit = () => {
+const handleSubmit = async() => {
   if (!validateForm()) return
 
   const investmentData = {
