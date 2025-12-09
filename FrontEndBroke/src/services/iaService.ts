@@ -1,4 +1,4 @@
-// iaService.ts completo
+// iaService.ts completo (VERSÃO DO SEU PC / HEAD)
 import axios from 'axios';
 
 export interface GeminiResponse {
@@ -45,7 +45,8 @@ export interface AnalysisConfig {
 }
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const GEMINI_API_URL =
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
 export const ANALYSIS_LEVELS: AnalysisLevel[] = [
   {
@@ -76,7 +77,7 @@ export const ANALYSIS_LEVELS: AnalysisLevel[] = [
 
 export const geminiService = {
   async getFinancialAdvice(
-    transactions: Transaction[], 
+    transactions: Transaction[],
     config: AnalysisConfig = getDefaultConfig()
   ): Promise<string> {
     try {
@@ -86,24 +87,30 @@ export const geminiService = {
 
       const formattedTransactions = transactions
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-        .map(t => `- ${t.date}: ${t.type === 'expense' ? '-' : '+'}R$${t.amount.toFixed(2)} (${t.category}) - ${t.description}`)
+        .map(
+          t =>
+            `- ${t.date}: ${t.type === 'expense' ? '-' : '+'}R$${t.amount.toFixed(
+              2
+            )} (${t.category}) - ${t.description}`
+        )
         .join('\n');
 
       const totalIncome = transactions
         .filter(t => t.type === 'income')
         .reduce((sum, t) => sum + t.amount, 0);
-      
+
       const totalExpenses = transactions
         .filter(t => t.type === 'expense')
         .reduce((sum, t) => sum + t.amount, 0);
-      
-      const balance = totalIncome - totalExpenses;
-      
-      const expenseCategories = [...new Set(transactions
-        .filter(t => t.type === 'expense')
-        .map(t => t.category))];
 
-      // Mapeia categorias com totais
+      const balance = totalIncome - totalExpenses;
+
+      const expenseCategories = [
+        ...new Set(
+          transactions.filter(t => t.type === 'expense').map(t => t.category)
+        )
+      ];
+
       const categoryTotals = transactions
         .filter(t => t.type === 'expense')
         .reduce((acc, t) => {
@@ -226,7 +233,10 @@ export const geminiService = {
       - **Renda Total**: R$${summary.totalIncome.toFixed(2)}
       - **Despesas Totais**: R$${summary.totalExpenses.toFixed(2)}
       - **Saldo Atual**: R$${summary.balance.toFixed(2)}
-      - **Taxa de Poupança**: ${((summary.balance / summary.totalIncome) * 100).toFixed(1)}%
+      - **Taxa de Poupança**: ${(
+        (summary.balance / summary.totalIncome) *
+        100
+      ).toFixed(1)}%
       
       ### 🔍 Análise Detalhada de Padrões
       - Identifique 3-4 padrões comportamentais
@@ -276,12 +286,12 @@ export const geminiService = {
     try {
       const { message, transactions, chatHistory } = params;
 
-      // Formata o histórico de conversa
       const formattedHistory = chatHistory
-        .map(msg => `${msg.role === 'user' ? 'Usuário' : 'Penny'}: ${msg.content}`)
+        .map(
+          msg => `${msg.role === 'user' ? 'Usuário' : 'Penny'}: ${msg.content}`
+        )
         .join('\n');
 
-      // Formata as transações mais recentes (últimos 30 dias por padrão)
       const recentTransactions = transactions
         .filter(t => {
           const transactionDate = new Date(t.date);
@@ -289,21 +299,28 @@ export const geminiService = {
           thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
           return transactionDate >= thirtyDaysAgo;
         })
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        .sort(
+          (a, b) =>
+            new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
 
       const formattedTransactions = recentTransactions
-        .map(t => `- ${t.date}: ${t.type === 'expense' ? '-' : '+'}R$${t.amount.toFixed(2)} (${t.category}) - ${t.description}`)
+        .map(
+          t =>
+            `- ${t.date}: ${t.type === 'expense' ? '-' : '+'}R$${t.amount.toFixed(
+              2
+            )} (${t.category}) - ${t.description}`
+        )
         .join('\n');
 
-      // Cálculos financeiros básicos
       const totalIncome = recentTransactions
         .filter(t => t.type === 'income')
         .reduce((sum, t) => sum + t.amount, 0);
-      
+
       const totalExpenses = recentTransactions
         .filter(t => t.type === 'expense')
         .reduce((sum, t) => sum + t.amount, 0);
-      
+
       const balance = totalIncome - totalExpenses;
 
       const prompt = `
@@ -339,7 +356,7 @@ export const geminiService = {
         "Não encontrei transações em [categoria]. Poderia confirmar se..."
       `;
 
-      const response = await this.callGeminiAPI(prompt, ANALYSIS_LEVELS[1]); // Prata para chat
+      const response = await this.callGeminiAPI(prompt, ANALYSIS_LEVELS[1]);
       return response;
     } catch (error) {
       console.error('Erro no chat com a IA:', error);
@@ -352,9 +369,11 @@ export const geminiService = {
       const response = await axios.post<GeminiResponse>(
         `${GEMINI_API_URL}?key=${GEMINI_API_KEY}`,
         {
-          contents: [{
-            parts: [{ text: prompt }]
-          }],
+          contents: [
+            {
+              parts: [{ text: prompt }]
+            }
+          ],
           generationConfig: {
             temperature: level.temperature,
             topP: 0.9,
@@ -369,8 +388,10 @@ export const geminiService = {
         }
       );
 
-      return response.data?.candidates?.[0]?.content?.parts?.[0]?.text || 
-        'Não foi possível gerar a resposta. Tente novamente.';
+      return (
+        response.data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        'Não foi possível gerar a resposta. Tente novamente.'
+      );
     } catch (error) {
       console.error('Erro na chamada da API Gemini:', error);
       throw error;
@@ -378,7 +399,6 @@ export const geminiService = {
   }
 };
 
-// Função auxiliar
 function getDefaultConfig(): AnalysisConfig {
   return {
     level: ANALYSIS_LEVELS[0], // Bronze

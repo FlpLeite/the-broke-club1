@@ -92,7 +92,7 @@
       </div>
       <strong><h1 class="Apresentacao">Olá, me chamo Penny!</h1></strong>
       <p>Escolha um nível de análise acima para obter insights personalizados sobre sua situação financeira</p>
-      
+
       <div class="level-comparison">
         <h4>Como escolher o nível ideal:</h4>
         <ul>
@@ -274,7 +274,7 @@ const formattedAdvice = computed(() => renderMarkdown(advice.value || ''));
   font-size: 140%;
 }
 
-/* ===== Estilos para o Seletor de Níveis (atualizado para abas) ===== */
+/* ===== Estilos para o Seletor de Níveis (abas) ===== */
 .analysis-level-selector {
   margin-bottom: 2rem;
   padding: 1.5rem;
@@ -324,7 +324,7 @@ const formattedAdvice = computed(() => renderMarkdown(advice.value || ''));
 
 .level-tab.active {
   border-color: #02e2ff;
-background: linear-gradient(135deg, #002d4b 0%, #0b3477 100%);
+  background: linear-gradient(135deg, #002d4b 0%, #0b3477 100%);
   box-shadow: 0 4px 10px rgba(0,0,0,.08);
 }
 
@@ -335,7 +335,7 @@ background: linear-gradient(135deg, #002d4b 0%, #0b3477 100%);
   font-size: 0.95rem;
 }
 
-/* Recursos incluídos (lista) */
+/* Recursos incluídos */
 .level-features {
   background: white;
   padding: 1rem;
@@ -394,35 +394,13 @@ background: linear-gradient(135deg, #002d4b 0%, #0b3477 100%);
   font-weight: 600;
 }
 
-.analyze-button.bronze {
-  background-color: #CD7F32;
-}
-
-.analyze-button.prata {
-  background-color: #C0C0C0;
-  color: #333;
-}
-
-.analyze-button.ouro {
-  background-color: #FFD700;
-  color: #333;
-}
+.analyze-button.bronze { background-color: #CD7F32; }
+.analyze-button.prata { background-color: #C0C0C0; color: #333; }
+.analyze-button.ouro  { background-color: #FFD700; color: #333; }
 
 .analyze-button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.analyze-button.bronze:hover:not(:disabled) {
-  background-color: #b56a28;
-}
-
-.analyze-button.prata:hover:not(:disabled) {
-  background-color: #a8a8a8;
-}
-
-.analyze-button.ouro:hover:not(:disabled) {
-  background-color: #e6c200;
 }
 
 .analyze-button:disabled {
@@ -476,17 +454,9 @@ background: linear-gradient(135deg, #002d4b 0%, #0b3477 100%);
   border-bottom: 2px solid #e0e0e0;
 }
 
-.analysis-header.bronze {
-  border-bottom-color: #CD7F32;
-}
-
-.analysis-header.prata {
-  border-bottom-color: #C0C0C0;
-}
-
-.analysis-header.ouro {
-  border-bottom-color: #FFD700;
-}
+.analysis-header.bronze { border-bottom-color: #CD7F32; }
+.analysis-header.prata  { border-bottom-color: #C0C0C0; }
+.analysis-header.ouro   { border-bottom-color: #FFD700; }
 
 .analysis-header h3 {
   margin: 0;
@@ -503,20 +473,9 @@ background: linear-gradient(135deg, #002d4b 0%, #0b3477 100%);
   text-transform: uppercase;
 }
 
-.analysis-badge.bronze {
-  background: #CD7F32;
-  color: white;
-}
-
-.analysis-badge.prata {
-  background: #C0C0C0;
-  color: #333;
-}
-
-.analysis-badge.ouro {
-  background: #FFD700;
-  color: #333;
-}
+.analysis-badge.bronze { background: #CD7F32; color: white; }
+.analysis-badge.prata  { background: #C0C0C0; color: #333; }
+.analysis-badge.ouro   { background: #FFD700; color: #333; }
 
 .advice-content {
   line-height: 1.8;
@@ -539,9 +498,9 @@ background: linear-gradient(135deg, #002d4b 0%, #0b3477 100%);
 
 .empty-image-container {
   display: flex;
-  justify-content: center; /* centraliza horizontalmente */
-  align-items: center;     /* centraliza verticalmente dentro do container */
-  margin-bottom: 1.5rem;   /* dá um respiro abaixo da imagem */
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }
 
 .empty-image {
@@ -555,15 +514,6 @@ background: linear-gradient(135deg, #002d4b 0%, #0b3477 100%);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.empty-state h3 {
-  color: #2c3e50;
-  margin-bottom: 1rem;
-}
-
-.dark .empty-state h3 {
-  color: #F3F7FA;
-}
-
 .level-comparison {
   margin-top: 2rem;
   padding: 1.5rem;
@@ -575,99 +525,9 @@ background: linear-gradient(135deg, #002d4b 0%, #0b3477 100%);
   background: #1F2937;
 }
 
-.level-comparison h4 {
-  margin-bottom: 1rem;
-  color: #2c3e50;
-}
-
-.dark .level-comparison h4 {
-  color: #F3F7FA;
-}
-
 .level-comparison ul {
   text-align: left;
   max-width: 500px;
   margin: 0 auto;
-}
-
-.level-comparison li {
-  margin-bottom: 0.5rem;
-  padding-left: 1rem;
-}
-
-/* ===== Ajustes de Markdown ===== */
-.advice-content :deep(strong) {
-  color: inherit;
-  font-weight: 700;
-}
-
-.advice-content :deep(h1),
-.advice-content :deep(h2),
-.advice-content :deep(h3) {
-  margin: 0.75rem 0 0.5rem;
-  line-height: 1.2;
-}
-
-.advice-content :deep(h1) { font-size: 1.4rem; }
-.advice-content :deep(h2) { font-size: 1.2rem; }
-.advice-content :deep(h3) { font-size: 1.05rem; }
-
-.dark .advice-content :deep(h1),
-.dark .advice-content :deep(h2),
-.dark .advice-content :deep(h3) {
-  color: #F3F7FA;
-}
-
-.advice-content :deep(a) {
-  text-decoration: underline;
-  word-break: break-word;
-}
-
-.advice-content :deep(br) {
-  content: "";
-  display: block;
-  margin-bottom: 0.8rem;
-}
-
-.advice-content :deep(ul),
-.advice-content :deep(ol) {
-  padding-left: 1.5rem;
-  margin: 1rem 0;
-}
-
-.advice-content :deep(li) {
-  margin-bottom: 0.5rem;
-  position: relative;
-  padding-left: 1.5rem;
-}
-
-.advice-content :deep(ul) :deep(li)::before {
-  content: "•";
-  color: #4CAF50;
-  font-weight: bold;
-  position: absolute;
-  left: 0;
-}
-
-.advice-content :deep(pre) {
-  background: rgba(0,0,0,0.05);
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  overflow-x: auto;
-}
-
-.dark .advice-content :deep(pre) {
-  background: rgba(255,255,255,0.07);
-}
-
-.advice-content :deep(code) {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  padding: 0.1rem 0.3rem;
-  border-radius: 4px;
-  background: rgba(0,0,0,0.06);
-}
-
-.dark .advice-content :deep(code) {
-  background: rgba(255,255,255,0.12);
 }
 </style>
