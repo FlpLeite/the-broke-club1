@@ -9,10 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-<<<<<<< HEAD
-=======
-    "@google/genai": "^1.31.0",
->>>>>>> 7357981 (Primeiro commit do projeto local)
     "@heroicons/vue": "^2.1.1",
     "@types/vue-router": "^2.0.0",
     "axios": "^1.9.0",
